@@ -1,58 +1,49 @@
 
-CREATE or REPLACE PROCEDURE store_otp(IN email VARCHAR(50),IN new_otp INTEGER)
-language plpgsql
- as $$
+CREATE or REPLACE PROCEDURE store_otp(IN email_inp VARCHAR(50),IN new_otp_inp INTEGER)
+LANGUAGE plpgsql
+AS $$
 
 BEGIN
     INSERT INTO otpstore 
-    VALUES(email, new_otp, now()) ON CONFLICT (email) DO UPDATE SET otp=new_otp, request_time=now();
-END;
-$$
-;
-
-
-CREATE OR REPLACE FUNCTION verify_otp(email VARCHAR(50), otp INTEGER)
-RETURNS BOOLEAN language plpgsql
-AS $$
-DECLARE 
-temp INTEGER DEFAULT 0 ;
-BEGIN
-    SELECT COUNT(*) 
-        INTO temp 
-        from otpstore o 
-        WHERE o.emailid=email and o.otp=otp ;
-    if temp =0 then RETURN false;
-    else RETURN true;
-    end if;
+    VALUES(email_inp, new_otp_inp, now()) 
+    ON CONFLICT (emailid) 
+        DO UPDATE SET otp=new_otp_inp, request_time=now();
 END;
 $$;
 
 
-CREATE OR REPLACE PROCEDURE store_logged_in(IN email VARCHAR(50),IN api_key VARCHAR(20))
+UPDATE otpstore 
+            SET attempts = attempts - 1 
+            WHERE emailid = email_inp;
+        SELECT attempts 
+            INTO rem 
+            from otpstore o 
+            WHERE o.emailid=email_inp;
+        IF rem = 0 THEN
+            DELETE FROM otpstore WHERE emailid=email_inp;
+        END IF;
+        RETURN false;
+
+
+CREATE OR REPLACE PROCEDURE store_logged_in(IN email_inp VARCHAR(50),IN api_key_inp VARCHAR(20))
 LANGUAGE plpgsql
 AS $$
 BEGIN
     INSERT INTO logged_in 
-    VALUES(email, api_key, now()) ON CONFLICT (email) DO UPDATE SET api_key=api_key, login_time=now();
+    VALUES(email_inp, api_key_inp, now()) ON CONFLICT (emailid) DO UPDATE SET api_key=api_key_inp, login_time=now();
 END;
 $$;
 
 
-CREATE OR REPLACE FUNCTION verify_key(email VARCHAR(50), api_key VARCHAR(20))
+CREATE OR REPLACE FUNCTION verify_key(email_inp VARCHAR(50), api_key_inp VARCHAR(20))
 RETURNS BOOLEAN
 LANGUAGE plpgsql AS $$
-DECLARE temp INTEGER DEFAULT 0 ;
 
 BEGIN
-
-    SELECT COUNT(*) 
-        INTO temp 
-        from logged_in l
-        WHERE l.emailid = email and l.api_key=api_key ;
-        
-    if temp =0 then RETURN false;
-    else RETURN true;
-
-    end if;
+    RETURN EXISTS (
+        SELECT
+        FROM logged_in l
+        WHERE l.emailid = email_inp and l.api_key=api_key_inp 
+    );
 END;
 $$;

@@ -1,7 +1,7 @@
 import 'package:postgres_pool/postgres_pool.dart';
 
 class Database {
-  final connection = PgPool(
+  static final connection = PgPool(
     PgEndpoint(
       host: 'localhost',
       port: 5432,

@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS otpstore(
     emailid VARCHAR PRIMARY KEY,
     otp INTEGER,
     request_time TIMESTAMP,
+    attempts INTEGER DEFAULT 5,
     FOREIGN KEY(emailid) references users(emailid)
 );
 

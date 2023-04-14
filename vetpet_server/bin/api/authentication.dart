@@ -4,20 +4,27 @@ import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
 import 'package:shelf/shelf.dart';
 
-import 'database.dart';
+import '../database/authentication.dart';
 
-class Authentication {
+/// Handles login and authentication
+class AuthApi {
   final _username = 'depmohit@gmail.com';
   final _password = 'BqAfVOWUSCIGw8LF';
 
+  late final smtpServer = SmtpServer(
+    'smtp-relay.sendinblue.com',
+    port: 587,
+    username: _username,
+    password: _password,
+  );
+
   Future<Response> sendOtp(String emailAddress) async {
-    if (!await Database.userExist(emailAddress)) {
+    if (!await AuthDB.userExist(emailAddress)) {
       return Response.unauthorized("Email does not exist");
     }
 
-    Random random = Random();
-    int otp = random.nextInt(89999) + 10000;
-    await Database.saveOtp(emailAddress, otp);
+    int otp = 10000 + Random().nextInt(89999);
+    await AuthDB.saveOtp(emailAddress, otp);
     String body = "Your OTP for email verification is $otp";
     print(body);
 
@@ -26,13 +33,6 @@ class Authentication {
       ..recipients.add(emailAddress)
       ..subject = 'Email verification'
       ..text = body;
-
-    final smtpServer = SmtpServer(
-      'smtp-relay.sendinblue.com',
-      port: 587,
-      username: _username,
-      password: _password,
-    );
 
     try {
       final sendReport = await send(message, smtpServer);
@@ -46,22 +46,26 @@ class Authentication {
   }
 
   String generateRandomString(int len) {
-    var r = Random();
     const chars =
         'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
-    return List.generate(len, (index) => chars[r.nextInt(chars.length)]).join();
+    return List.generate(
+      len,
+      (index) => chars[Random().nextInt(chars.length)],
+    ).join();
   }
 
-  Future<Response> verifyOtp(String emailAddress, int otp) async {
-    bool verified = await Database.verifyOtp(emailAddress, otp);
+  Future<Map<String, dynamic>?> verifyOtp(String emailAddress, int otp) async {
+    bool verified = await AuthDB.verifyOtp(emailAddress, otp);
     if (verified) {
       String apiKey = generateRandomString(20);
-      await Database.storeLoggedIn(emailAddress, apiKey);
-      String userType = await Database.userType(emailAddress);
-      return Response.ok("OTP Verified:$userType",
-          headers: {'authorization': apiKey});
-    } else {
-      return Response.forbidden("OTP Incorrect");
+      await AuthDB.storeLoggedIn(emailAddress, apiKey);
+      String userType = await AuthDB.userType(emailAddress);
+      return {'user_type': userType, 'api_key': apiKey};
     }
+    return null;
+  }
+
+  Future<bool> verifyKey(String email, String key) {
+    return AuthDB.verifyKey(email, key);
   }
 }
