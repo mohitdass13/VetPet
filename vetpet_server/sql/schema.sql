@@ -1,6 +1,5 @@
 
 CREATE TABLE IF NOT EXISTS users(
-    name VARCHAR,
     emailid  VARCHAR PRIMARY KEY,
     role VARCHAR -- owner/vet
 );
@@ -51,7 +50,7 @@ CREATE TABLE IF NOT EXISTS vet (
     name VARCHAR,
     emailid VARCHAR PRIMARY KEY,
     phone_number VARCHAR,
-    clinic_id INTEGER,
+    -- clinic_id INTEGER,
     working_time VARCHAR,
     state VARCHAR,
     FOREIGN KEY(emailid) references users(emailid)

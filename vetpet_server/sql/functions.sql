@@ -11,18 +11,32 @@ BEGIN
 END;
 $$;
 
-
-UPDATE otpstore 
-            SET attempts = attempts - 1 
-            WHERE emailid = email_inp;
-        SELECT attempts 
-            INTO rem 
-            from otpstore o 
-            WHERE o.emailid=email_inp;
-        IF rem = 0 THEN
-            DELETE FROM otpstore WHERE emailid=email_inp;
-        END IF;
-        RETURN false;
+CREATE OR REPLACE FUNCTION verify_otp(email_inp VARCHAR(50), otp_inp INTEGER)
+RETURNS BOOLEAN language plpgsql
+AS $$
+DECLARE 
+rem INTEGER;
+BEGIN
+    if EXISTS (
+        SELECT
+        FROM otpstore o
+        WHERE o.emailid = email_inp and o.otp=otp_inp
+    ) then RETURN true;
+    else 
+        UPDATE otpstore 
+                SET attempts = attempts - 1 
+                WHERE emailid = email_inp;
+            SELECT attempts 
+                INTO rem 
+                from otpstore o 
+                WHERE o.emailid=email_inp;
+            IF rem = 0 THEN
+                DELETE FROM otpstore WHERE emailid=email_inp;
+            END IF;
+            RETURN false;
+    end if;
+END;
+$$;
 
 
 CREATE OR REPLACE PROCEDURE store_logged_in(IN email_inp VARCHAR(50),IN api_key_inp VARCHAR(20))

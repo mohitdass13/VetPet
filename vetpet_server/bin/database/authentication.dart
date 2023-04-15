@@ -42,8 +42,42 @@ class AuthDB {
       'SELECT verify_key(@email, @key)',
       substitutionValues: {'email': email, 'key': key},
     );
-    print(result.first.values.first['verify_key']);
-    return true;
-    //result.rows.first.typedColAt<int>(0) == 1;
+    return result.first.values.first['verify_key'];
+  }
+
+  static Future<bool> addUser(String email, String role) async {
+    var result = await Database.connection.execute(
+      'INSERT INTO users VALUES (@email, @role)',
+      substitutionValues: {'email': email, 'role': role},
+    );
+    return result > 0;
+  }
+
+  static Future<bool> addVet(String email, String name, String phone,
+      String wTime, String state) async {
+    var result = await Database.connection.execute(
+      'INSERT INTO vet VALUES (@name, @email, @phone, @w_time, @state)',
+      substitutionValues: {
+        'email': email,
+        'name': name,
+        'phone': phone,
+        'w_time': wTime,
+        'state': state,
+      },
+    );
+    return result > 0;
+  }
+
+  static Future<bool> addOwner(String email, String name, String phone, String state) async {
+    var result = await Database.connection.execute(
+      'INSERT INTO owner VALUES (@name, @email, @phone, @state)',
+      substitutionValues: {
+        'email': email,
+        'name': name,
+        'phone': phone,
+        'state': state,
+      },
+    );
+    return result > 0;
   }
 }

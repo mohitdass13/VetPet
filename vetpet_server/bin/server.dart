@@ -6,12 +6,14 @@ import 'package:shelf/shelf_io.dart';
 import 'package:shelf_router/shelf_router.dart';
 
 import 'api/authentication.dart';
-import 'database/authentication.dart';
 
 // Configure routes.
 final _router = Router()
   ..get('/', _rootHandler)
   ..get('/echo/<message>', _echoHandler)
+  ..post('/api/signup/add_user/', _signupUser)
+  ..post('/api/signup/vet/', _signupVet)
+  ..post('/api/signup/owner/', _signupOwner)
   ..post('/api/login/requestotp/', _otpRequest)
   ..post('/api/login/verifyotp/', _otpVerify);
 
@@ -54,6 +56,50 @@ Future<Response> _otpVerify(Request req) async {
         headers: {'authorization': verification['api_key']});
   } else {
     return Response.forbidden("Incorrect OTP!");
+  }
+}
+
+Future<Response> _signupUser(Request req) async {
+  Map<String, dynamic> content = jsonDecode(await req.readAsString());
+  String? email = content['email'];
+  String? role = content['role'];
+  if (email == null || role == null) {
+    return Response.badRequest();
+  }
+
+  if (await auth.addUser(email, role)) {
+    return await auth.sendOtp(email);
+  } else {
+    return Response.internalServerError();
+  }
+}
+
+Future<Response> _signupVet(Request req) async {
+  Map<String, dynamic> content = jsonDecode(await req.readAsString());
+  String email = content['email'];
+  String name = content['name'];
+  String phone = content['phone'];
+  String wTime = content['working_time'];
+  String state = content['state'];
+
+  if (await auth.addVet(email, name, phone, wTime, state)) {
+    return Response.ok('Vet added!');
+  } else {
+    return Response.internalServerError();
+  }
+}
+
+Future<Response> _signupOwner(Request req) async {
+  Map<String, dynamic> content = jsonDecode(await req.readAsString());
+  String email = content['email'];
+  String name = content['name'];
+  String phone = content['phone'];
+  String state = content['state'];
+
+  if (await auth.addOwner(email, name, phone, state)) {
+    return Response.ok('Owner added!');
+  } else {
+    return Response.internalServerError();
   }
 }
 
