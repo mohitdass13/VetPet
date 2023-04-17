@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:vetpet/owner/tabs.dart';
 import 'package:vetpet/signup.dart';
+import 'package:vetpet/vet/tabs.dart';
 
 import 'login.dart';
 
@@ -19,7 +21,9 @@ class MyApp extends StatelessWidget {
       initialRoute: '/signup',
       routes: {
         "/login": (context) => const LoginPage(),
-        "/signup": (context) => SignupPage(),
+        "/signup": (context) => const SignupPage(),
+        "/vet/home": (context) => const VetTabs(),
+        "/owner/home": (context) => const OwnerTabs(),
       },
     );
   }
