@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:vetpet/login/login.dart';
+import 'package:vetpet/login/signup.dart';
 import 'package:vetpet/owner/tabs.dart';
-import 'package:vetpet/signup.dart';
 import 'package:vetpet/vet/tabs.dart';
-
-import 'login.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,7 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.red,
+        useMaterial3: true,
       ),
       initialRoute: '/signup',
       routes: {
