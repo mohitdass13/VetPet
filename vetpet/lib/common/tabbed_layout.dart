@@ -47,9 +47,7 @@ class _TabbedLayoutState extends State<TabbedLayout> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Expanded(
-          child: widget.tabs[_selectedIndex].body,
-        ),
+        child: widget.tabs[_selectedIndex].body,
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: items,
