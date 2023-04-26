@@ -38,7 +38,7 @@ class Authentication {
       if (await fetchInfo()) {
         return {'success': true, 'role': role};
       }
-      return {'success': true, 'response': 'failed to fetch info'};
+      return {'success': false, 'response': 'failed to fetch info'};
     }
     return response;
   }
@@ -57,7 +57,6 @@ class Authentication {
           data['phone_number'],
           data['working_time'],
         ));
-        return true;
       } else {
         Storage.saveUserData(Owner(
           data['emailid'],
@@ -66,6 +65,7 @@ class Authentication {
           data['phone_number'],
         ));
       }
+      return true;
     }
     return false;
   }

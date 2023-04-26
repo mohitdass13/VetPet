@@ -130,8 +130,7 @@ Future<Response> _vetInfo(Request request) async {
 }
 
 Future<Response> _ownerInfo(Request request) async {
-  final params = request.requestedUri.queryParameters;
-  String email = params['email']!;
+  String email = request.headers['email']!;
   final data = await UserApi.getInfo(
       email, 'owner', !await verifyUser(request, 'owner'));
   if (data == null) {
