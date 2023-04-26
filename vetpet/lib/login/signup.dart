@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vetpet/api/authentication.dart';
+import 'package:vetpet/common/utils.dart';
 import 'package:vetpet/login/registration.dart';
 
 class SignupPage extends StatefulWidget {
@@ -102,10 +103,8 @@ class _SignupPageState extends State<SignupPage> {
                             await Authentication.signupUser(
                                 _emailController.text, role);
                         if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text(map["response"]),
-                          ));
-                          if (map["sent"]) {
+                          Utils.showSnackbar(context, map["response"]);
+                          if (map["success"]) {
                             setState(() {
                               _otpSent = true;
                             });
@@ -131,7 +130,7 @@ class _SignupPageState extends State<SignupPage> {
                             await Authentication.verifyOtp(
                                 _emailController.text, _otpController.text);
                         emailSave = _emailController.text;
-                        if (map["verified"]) {
+                        if (map["success"]) {
                           Authentication.roleSave = role;
                           if (mounted) {
                             Navigator.push(
@@ -140,6 +139,10 @@ class _SignupPageState extends State<SignupPage> {
                                   builder: (context) =>
                                       Registration(role: role)),
                             );
+                          }
+                        } else {
+                          if (mounted) {
+                            Utils.showSnackbar(context, map['response']);
                           }
                         }
                       },

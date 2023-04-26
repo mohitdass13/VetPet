@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vetpet/api/authentication.dart';
+import 'package:vetpet/common/utils.dart';
 
 class Registration extends StatefulWidget {
   const Registration({super.key, required this.role});
@@ -93,7 +94,7 @@ class _RegistrationState extends State<Registration> {
                       if (widget.role == "vet") {
                         response = await Authentication.addVet(_name.text,
                             _phone.text, _workingTime.text, _state!);
-                        if (response["added"] == true) {
+                        if (response["success"] == true) {
                           if (mounted) {
                             Navigator.pushNamedAndRemoveUntil(
                               context,
@@ -105,13 +106,17 @@ class _RegistrationState extends State<Registration> {
                       } else {
                         response = await Authentication.addOwner(
                             _name.text, _phone.text, _state!);
-                        if (response["added"] == true) {
+                        if (response["success"] == true) {
                           if (mounted) {
                             Navigator.pushNamedAndRemoveUntil(
                               context,
                               "/owner/home",
                               (route) => false,
                             );
+                          }
+                        } else {
+                          if (mounted) {
+                            Utils.showSnackbar(context, response['response']);
                           }
                         }
                       }
