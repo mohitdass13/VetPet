@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:vetpet/api/requests.dart';
 
 class Authentication {
@@ -13,12 +15,23 @@ class Authentication {
     });
   }
 
+  static Future<Map<String, dynamic>> requestOtp(String email) async {
+    return await Requests.postJson('$baseUrl/login/requestotp/', {
+      "email": email,
+    });
+  }
+
   static Future<Map<String, dynamic>> verifyOtp(
       String email, String otp) async {
-    return Requests.postJson('$baseUrl/login/verifyotp/', {
+    final response = await Requests.postJson('$baseUrl/login/verifyotp/', {
       "email": email,
       "otp": otp,
     });
+    if (response["success"]) {
+      var data = jsonDecode(response["response"]);
+      return {'success': true, 'role': data["user_type"]};
+    }
+    return response;
   }
 
   static Future<Map<String, dynamic>> addVet(

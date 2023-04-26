@@ -51,9 +51,7 @@ Future<Response> _otpVerify(Request req) async {
   }
   final verification = await auth.verifyOtp(email, otpInt);
   if (verification != null) {
-    return Response.ok(
-        "OTP Verified! Logging in as ${verification['user_type']}...",
-        headers: {'authorization': verification['api_key']});
+    return Response.ok(jsonEncode(verification));
   } else {
     return Response.forbidden("Incorrect OTP!");
   }

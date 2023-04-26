@@ -21,7 +21,8 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         colorSchemeSeed: Colors.blue,
       ),
-      initialRoute: '/vet/home',
+      // initialRoute: '/vet/home',
+      initialRoute: '/login',
       routes: {
         "/login": (context) => const LoginPage(),
         "/signup": (context) => const SignupPage(),
