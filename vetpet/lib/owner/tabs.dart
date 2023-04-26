@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:vetpet/common/tabbed_layout.dart';
-import 'package:vetpet/vet/chat.dart';
-import 'package:vetpet/vet/home.dart';
-import 'package:vetpet/vet/notifications.dart';
-import 'package:vetpet/vet/profile.dart';
+import 'package:vetpet/owner/chat.dart';
+import 'package:vetpet/owner/home.dart';
+import 'package:vetpet/owner/notifications.dart';
+import 'package:vetpet/owner/profile.dart';
 
 class OwnerTabs extends StatelessWidget {
   const OwnerTabs({super.key});
@@ -13,25 +13,25 @@ class OwnerTabs extends StatelessWidget {
     return const TabbedLayout(
       tabs: [
         TabData(
-          body: VetHome(),
+          body: OwnerHome(),
           tabTitle: "Home",
           inactiveIcon: Icons.home_outlined,
           activeIcon: Icons.home,
         ),
         TabData(
-          body: VetChat(),
+          body: OwnerChat(),
           tabTitle: "Chat",
           inactiveIcon: Icons.chat_outlined,
           activeIcon: Icons.chat_bubble,
         ),
         TabData(
-          body: VetNotifications(),
+          body: OwnerNotifications(),
           tabTitle: "Notifications",
           inactiveIcon: Icons.notifications_outlined,
           activeIcon: Icons.notifications,
         ),
         TabData(
-          body: VetProfile(),
+          body: OwnerProfile(),
           tabTitle: "Profile",
           inactiveIcon: Icons.person_outline,
           activeIcon: Icons.person,

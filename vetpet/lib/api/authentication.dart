@@ -7,8 +7,6 @@ import 'package:vetpet/types.dart';
 
 class Authentication {
   static String baseUrl = "http://localhost:8080/api";
-  static String emailSave = "";
-  static String roleSave = "";
 
   static Future<Map<String, dynamic>> signupUser(
       String email, String role) async {
@@ -24,8 +22,8 @@ class Authentication {
     });
   }
 
-  static Future<Map<String, dynamic>> verifyOtp(
-      String email, String otp) async {
+  static Future<Map<String, dynamic>> verifyOtp(String email, String otp,
+      {bool signup = false}) async {
     final response = await Requests.postJson('$baseUrl/login/verifyotp/', {
       "email": email,
       "otp": otp,
@@ -35,10 +33,12 @@ class Authentication {
       String role = data["user_type"];
       String api = data["api_key"];
       await Storage.saveCredentials(email, api, role);
-      if (await fetchInfo()) {
-        return {'success': true, 'role': role};
+      if (!signup) {
+        if (await fetchInfo()) {
+          return {'success': true, 'role': role};
+        }
+        return {'success': false, 'response': 'failed to fetch info'};
       }
-      return {'success': false, 'response': 'failed to fetch info'};
     }
     return response;
   }
@@ -72,22 +72,45 @@ class Authentication {
 
   static Future<Map<String, dynamic>> addVet(
       String name, String phone, String working, String state) async {
-    return Requests.postJson('$baseUrl/signup/vet/', {
+    final req = await Requests.postJson('$baseUrl/signup/vet/', {
       "name": name,
-      "email": emailSave,
+      "email": CurrentUser.userEmail,
       "phone": phone,
       "working_time": working,
       "state": state,
     });
+    if (req['success']) {
+      Storage.saveUserData(Vet(
+          CurrentUser.userEmail!,
+          name,
+          state,
+          phone,
+          working,
+        ));
+    }
+    return req;
   }
 
   static Future<Map<String, dynamic>> addOwner(
       String name, String phone, String state) async {
-    return Requests.postJson('$baseUrl/signup/owner/', {
+    final req = await Requests.postJson('$baseUrl/signup/owner/', {
       "name": name,
-      "email": emailSave,
+      "email": CurrentUser.userEmail,
       "phone": phone,
       "state": state,
     });
+    if (req['success']) {
+      Storage.saveUserData(Owner(
+          CurrentUser.userEmail!,
+          name,
+          state,
+          phone,
+        ));
+    }
+    return req;
+  }
+
+  static Future<void> logout() async {
+    await Storage.clearAll();
   }
 }

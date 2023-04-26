@@ -14,7 +14,6 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _otpController = TextEditingController();
   bool _otpSent = false;
-  String emailSave = "";
   final emailReg = RegExp(r'^[a-zA-Z0-9_.-]+@[a-zA-Z]+\.[a-zA-Z]+$');
 
   @override
@@ -35,6 +34,9 @@ class _LoginPageState extends State<LoginPage> {
               validator: (value) => value != null && emailReg.hasMatch(value)
                   ? 'Invalid Email'
                   : null,
+            ),
+            const SizedBox(
+              height: 10,
             ),
             Align(
               alignment: Alignment.centerRight,
@@ -62,6 +64,9 @@ class _LoginPageState extends State<LoginPage> {
               decoration: const InputDecoration(
                   labelText: 'OTP', icon: Icon(Icons.key)),
             ),
+            const SizedBox(
+              height: 30,
+            ),
             ElevatedButton(
                 onPressed: _otpSent == false
                     ? null
@@ -69,10 +74,8 @@ class _LoginPageState extends State<LoginPage> {
                         Map<String, dynamic> map =
                             await Authentication.verifyOtp(
                                 _emailController.text, _otpController.text);
-                        emailSave = _emailController.text;
                         String role = map["role"];
                         if (map["success"]) {
-                          Authentication.roleSave = role;
                           if (mounted) {
                             Navigator.popAndPushNamed(
                               context,
@@ -85,7 +88,38 @@ class _LoginPageState extends State<LoginPage> {
                           }
                         }
                       },
-                child: const Text("Login"))
+                child: const Text("Login")),
+            const SizedBox(
+              height: 10,
+            ),
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                const Divider(
+                  color: Colors.black,
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: Colors.white),
+                  child: const Text(
+                    'Don\'t have an account ?',
+                  ),
+                ),
+                const SizedBox(
+                  height: 40,
+                )
+              ],
+            ),
+            const SizedBox(
+              width: 10,
+            ),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/signup');
+                },
+                child: const Text("Register")),
           ],
         ),
       ),

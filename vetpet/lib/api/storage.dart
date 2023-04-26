@@ -33,11 +33,11 @@ abstract class Storage {
     if (CurrentUser.role != null) {
       List<String> userData = prefs.getStringList('userData')!;
       if (CurrentUser.role == 'vet') {
-        CurrentUser.user =
-            Vet(CurrentUser.userEmail!, userData[0], userData[1], userData[2], userData[3]);
+        CurrentUser.user = Vet(CurrentUser.userEmail!, userData[0], userData[1],
+            userData[2], userData[3]);
       } else {
-        CurrentUser.user =
-            Owner(CurrentUser.userEmail!, userData[0], userData[1], userData[2]);
+        CurrentUser.user = Owner(
+            CurrentUser.userEmail!, userData[0], userData[1], userData[2]);
       }
     }
   }
@@ -56,7 +56,21 @@ abstract class Storage {
   }
 
   static Future<String> getFirstRoute() async {
-    await getCredentials();
+    try {
+      await getCredentials();
+    } catch (_) {}
     return CurrentUser.role == null ? '/login' : '/${CurrentUser.role}/home';
+  }
+
+  static Future<void> clearAll() async {
+    final prefs = await _getPrefs();
+    prefs.remove('email');
+    prefs.remove('apiKey');
+    prefs.remove('role');
+    prefs.remove('userData');
+    CurrentUser.userEmail = null;
+    CurrentUser.role = null;
+    CurrentUser.userKey = null;
+    CurrentUser.user = null;
   }
 }
