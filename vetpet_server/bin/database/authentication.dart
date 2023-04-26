@@ -46,11 +46,15 @@ class AuthDB {
   }
 
   static Future<bool> addUser(String email, String role) async {
-    var result = await Database.connection.execute(
-      'INSERT INTO users VALUES (@email, @role)',
-      substitutionValues: {'email': email, 'role': role},
-    );
-    return result > 0;
+    try {
+      var result = await Database.connection.execute(
+        'INSERT INTO users VALUES (@email, @role) ON CONFLICT DO NOTHING',
+        substitutionValues: {'email': email, 'role': role},
+      );
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   static Future<bool> addVet(String email, String name, String phone,
@@ -68,7 +72,8 @@ class AuthDB {
     return result > 0;
   }
 
-  static Future<bool> addOwner(String email, String name, String phone, String state) async {
+  static Future<bool> addOwner(
+      String email, String name, String phone, String state) async {
     var result = await Database.connection.execute(
       'INSERT INTO owner VALUES (@name, @email, @phone, @state)',
       substitutionValues: {

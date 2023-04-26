@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:vetpet/api/authentication.dart';
+import 'package:vetpet/login/registration.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
   @override
   State<SignupPage> createState() => _SignupPageState();
+  // final String emailSave = "";
 }
 
 class _SignupPageState extends State<SignupPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _otpController = TextEditingController();
   bool _otpSent = false;
-
+  String emailSave = "";
   String role = "";
-  String email = "";
-  String otp = "";
+
   final emailReg = RegExp(r'^[a-zA-Z0-9_.-]+@[a-zA-Z]+\.[a-zA-Z]+$');
 
   @override
@@ -93,21 +95,23 @@ class _SignupPageState extends State<SignupPage> {
             Align(
               alignment: Alignment.centerRight,
               child: ElevatedButton(
-                onPressed: () async {
-                  // List response = await Authentication.requestOTP(
-                  //     _emailController.text);
-                  // _otpSent=response[0];
-                  // String message = response[1];
-                  // if (mounted) {
-                  //   ScaffoldMessenger.of(context)
-                  //       .showSnackBar(SnackBar(
-                  //     content: Text(message),
-                  //   ));
-                  //   if (_otpSent) {
-                  //     setState(() {});
-                  //   }
-                  // }
-                },
+                onPressed: role == ""
+                    ? null
+                    : () async {
+                        Map<String, dynamic> map =
+                            await Authentication.signupUser(
+                                _emailController.text, role);
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(map["response"]),
+                          ));
+                          if (map["sent"]) {
+                            setState(() {
+                              _otpSent = true;
+                            });
+                          }
+                        }
+                      },
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
                     foregroundColor: Colors.white),
@@ -119,7 +123,27 @@ class _SignupPageState extends State<SignupPage> {
               decoration: const InputDecoration(
                   labelText: 'OTP', icon: Icon(Icons.key)),
             ),
-            ElevatedButton(onPressed: () {}, child: const Text("Submit"))
+            ElevatedButton(
+                onPressed: _otpSent == false
+                    ? null
+                    : () async {
+                        Map<String, dynamic> map =
+                            await Authentication.verifyOtp(
+                                _emailController.text, _otpController.text);
+                        emailSave = _emailController.text;
+                        if (map["verified"]) {
+                          Authentication.roleSave = role;
+                          if (mounted) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      Registration(role: role)),
+                            );
+                          }
+                        }
+                      },
+                child: const Text("Submit"))
           ],
         ),
       ),
