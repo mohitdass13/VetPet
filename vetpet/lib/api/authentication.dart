@@ -1,6 +1,9 @@
 import 'dart:convert';
 
 import 'package:vetpet/api/requests.dart';
+import 'package:vetpet/api/storage.dart';
+import 'package:vetpet/api/user.dart';
+import 'package:vetpet/types.dart';
 
 class Authentication {
   static String baseUrl = "http://localhost:8080/api";
@@ -29,9 +32,42 @@ class Authentication {
     });
     if (response["success"]) {
       var data = jsonDecode(response["response"]);
-      return {'success': true, 'role': data["user_type"]};
+      String role = data["user_type"];
+      String api = data["api_key"];
+      await Storage.saveCredentials(email, api, role);
+      if (await fetchInfo()) {
+        return {'success': true, 'role': role};
+      }
+      return {'success': true, 'response': 'failed to fetch info'};
     }
     return response;
+  }
+
+  static Future<bool> fetchInfo() async {
+    final response = await Requests.getJson(
+        '$baseUrl/${CurrentUser.role}/details',
+        authorization: true);
+    if (response['success']) {
+      final data = jsonDecode(response['response']);
+      if (CurrentUser.role == 'vet') {
+        Storage.saveUserData(Vet(
+          data['emailid'],
+          data['name'],
+          data['state'],
+          data['phone_number'],
+          data['working_time'],
+        ));
+        return true;
+      } else {
+        Storage.saveUserData(Owner(
+          data['emailid'],
+          data['name'],
+          data['state'],
+          data['phone_number'],
+        ));
+      }
+    }
+    return false;
   }
 
   static Future<Map<String, dynamic>> addVet(

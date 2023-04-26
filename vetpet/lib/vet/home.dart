@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vetpet/api/authentication.dart';
 import 'package:vetpet/types.dart';
 
 class VetHome extends StatefulWidget {
@@ -10,10 +11,10 @@ class VetHome extends StatefulWidget {
 
 class _VetHomeState extends State<VetHome> {
   List<Owner> clients = [
-    Owner("test1@gmial.com", "Client 1"),
-    Owner("test2@gmial.com", "Client 2"),
-    Owner("test3@gmial.com", "Client 3"),
-    Owner("test4@gmial.com", "Client 4"),
+    Owner("test1@gmial.com", "Client 1", '', ''),
+    Owner("test2@gmial.com", "Client 2", '', ''),
+    Owner("test3@gmial.com", "Client 3", '', ''),
+    Owner("test4@gmial.com", "Client 4", '',''),
   ];
 
   @override
@@ -32,7 +33,9 @@ class _VetHomeState extends State<VetHome> {
                   padding: EdgeInsets.all(8.0),
                   child: Text('New notificaton (if any)'),
                 ),
-                onTap: () => setState(() {}),
+                onTap: () async {
+                  await Authentication.fetchInfo();
+                },
               ),
             ),
             Card(

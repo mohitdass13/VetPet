@@ -1,12 +1,20 @@
 class User {
   String name;
   String email;
-  User(this.email, this.name);
+  String state;
+  String phone;
+  User(this.email, this.name, this.state, this.phone);
+}
+
+class Vet extends User {
+  Vet(super.email, super.name, super.state, super.phone, this.wTime);
+  String wTime;
 }
 
 class Owner extends User {
-  Owner(String email, String name) : super(email, name);
   List<Pet> pets = [Pet(0, "Pet1"), Pet(1, "Pet2"), Pet(2, "Pet3")];
+
+  Owner(super.email, super.name, super.state, super.phone);
 }
 
 class Pet {

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:vetpet/owner/home.dart';
-import 'package:vetpet/vet/home.dart';
 
 import '../api/authentication.dart';
 import '../common/utils.dart';
