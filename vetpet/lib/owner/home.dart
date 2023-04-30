@@ -8,6 +8,15 @@ class OwnerHome extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
+        actions: [
+          IconButton(
+            color: Colors.blue,
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              Navigator.pushNamed(context, '/owner/addpet');
+            },
+          ),
+        ],
       ),
     );
   }

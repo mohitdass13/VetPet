@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:vetpet/common/chat.dart';
 import 'package:vetpet/login/login.dart';
 import 'package:vetpet/login/signup.dart';
-import 'package:vetpet/owner/tabs.dart';
+import 'package:vetpet/owner/AddPet.dart';
+import 'package:vetpet/owner/home.dart';
 import 'package:vetpet/types.dart';
 import 'package:vetpet/vet/client_details.dart';
 import 'package:vetpet/vet/tabs.dart';
@@ -21,12 +22,13 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         colorSchemeSeed: Colors.blue,
       ),
-      initialRoute: '/vet/home',
+      initialRoute: '/owner/home',
       routes: {
         "/login": (context) => const LoginPage(),
         "/signup": (context) => const SignupPage(),
         "/vet/home": (context) => const VetTabs(),
-        "/owner/home": (context) => const OwnerTabs(),
+        "/owner/home": (context) => const OwnerHome(),
+        "/owner/addpet": (context) => const AddPet(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/vet/client') {

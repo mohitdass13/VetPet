@@ -9,6 +9,8 @@ class Owner extends User {
   List<Pet> pets = [Pet(0, "Pet1"), Pet(1, "Pet2"), Pet(2, "Pet3")];
 }
 
+List<String> breed = ["Labrador", "Pug", "German Shepherd", "Golden Retriever"];
+
 class Pet {
   String name;
   int id;
