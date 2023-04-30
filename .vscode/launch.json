@@ -1,0 +1,33 @@
+{
+  // adb reverse tcp:8080 tcp:8080
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "vetpet",
+      "cwd": "vetpet",
+      "request": "launch",
+      "type": "dart"
+    },
+    {
+      "name": "vetpet_server",
+      "cwd": "vetpet_server",
+      "request": "launch",
+      "program": "bin/server.dart",
+      "type": "dart"
+    },
+    {
+      "name": "vetpet (profile mode)",
+      "cwd": "vetpet",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "profile"
+    },
+    {
+      "name": "vetpet (release mode)",
+      "cwd": "vetpet",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "release"
+    }
+  ]
+}

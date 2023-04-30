@@ -69,6 +69,10 @@ class AuthApi {
     return AuthDB.verifyKey(email, key);
   }
 
+  Future<String> userType(String email) {
+    return AuthDB.userType(email);
+  }
+
   Future<bool> addUser(String email, String role) async {
     if (role != 'vet' && role != 'owner') {
       return false;
@@ -85,8 +89,8 @@ class AuthApi {
     return false;
   }
 
-  Future<bool> addOwner(String email, String name, String phone, 
-      String state) async {
+  Future<bool> addOwner(
+      String email, String name, String phone, String state) async {
     if (await AuthDB.userType(email) == 'owner') {
       return AuthDB.addOwner(email, name, phone, state);
     }

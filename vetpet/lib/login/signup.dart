@@ -14,7 +14,6 @@ class _SignupPageState extends State<SignupPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _otpController = TextEditingController();
   bool _otpSent = false;
-  String emailSave = "";
   String role = "";
 
   final emailReg = RegExp(r'^[a-zA-Z0-9_.-]+@[a-zA-Z]+\.[a-zA-Z]+$');
@@ -128,10 +127,9 @@ class _SignupPageState extends State<SignupPage> {
                     : () async {
                         Map<String, dynamic> map =
                             await Authentication.verifyOtp(
-                                _emailController.text, _otpController.text);
-                        emailSave = _emailController.text;
+                                _emailController.text, _otpController.text,
+                                signup: true);
                         if (map["success"]) {
-                          Authentication.roleSave = role;
                           if (mounted) {
                             Navigator.push(
                               context,

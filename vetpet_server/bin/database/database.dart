@@ -1,9 +1,11 @@
+import 'dart:io';
+
 import 'package:postgres_pool/postgres_pool.dart';
 
 class Database {
   static final connection = PgPool(
     PgEndpoint(
-      host: 'localhost',
+      host: Platform.environment['POSTGRES_HOST'] ??  'localhost',
       port: 5432,
       database: 'vetpet',
       username: 'postgres',

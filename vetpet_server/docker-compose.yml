@@ -1,0 +1,34 @@
+version: '3.4'
+
+services:
+  pg_database:
+    image: postgres
+    container_name: vetpet_database
+    restart: always
+    volumes:
+      - ./pgdata:/pgdata:rw
+      - ./sql:/docker-entrypoint-initdb.d:ro
+    environment:
+      PGDATA: /pgdata
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: vetpet
+    networks:
+      - my_net
+
+  server:
+    build: .
+    container_name: vetpet_server
+    ports:
+      - 8080:8080
+    networks:
+      - my_net
+    environment:
+      - POSTGRES_HOST=pg_database
+
+networks: 
+  my_net:
+    driver: bridge
+
+
+
+

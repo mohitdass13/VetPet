@@ -34,34 +34,54 @@ class _RegistrationState extends State<Registration> {
             TextFormField(
               controller: _name,
               decoration: const InputDecoration(
-                labelText: "Name",
-              ),
+                  icon: Icon(Icons.person),
+                  labelText: "Name",
+                  labelStyle: TextStyle(
+                    color: Colors.black87,
+                    fontSize: 19,
+                  )),
             ),
             TextFormField(
               controller: _phone,
               decoration: const InputDecoration(
-                labelText: "Phone Number",
-              ),
+                  icon: Icon(Icons.phone),
+                  labelText: "Phone Number",
+                  labelStyle: TextStyle(
+                    color: Colors.black87,
+                    fontSize: 19,
+                  )),
             ),
             if (widget.role == "vet")
               TextFormField(
                 controller: _workingTime,
                 decoration: const InputDecoration(
-                  labelText: "Working time",
-                ),
+                    icon: Icon(Icons.work),
+                    labelText: "Working time",
+                    labelStyle: TextStyle(
+                      color: Colors.black87,
+                      fontSize: 19,
+                    )),
               ),
             const SizedBox(
               height: 17,
             ),
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Select State:',
-                style: TextStyle(fontSize: 17),
-              ),
+            Row(
+              children: const [
+                Icon(Icons.location_on),
+                SizedBox(
+                  width: 15,
+                ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Select State:',
+                    style: TextStyle(fontSize: 19, color: Colors.black87),
+                  ),
+                ),
+              ],
             ),
             Align(
-              alignment: Alignment.centerLeft,
+              alignment: Alignment.center,
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 250),
                 child: DropdownButton<String>(
@@ -85,6 +105,9 @@ class _RegistrationState extends State<Registration> {
                   },
                 ),
               ),
+            ),
+            const SizedBox(
+              height: 40,
             ),
             ElevatedButton(
               onPressed: (_state == null)
@@ -121,8 +144,6 @@ class _RegistrationState extends State<Registration> {
                         }
                       }
                     },
-              style: const ButtonStyle(
-                  backgroundColor: MaterialStatePropertyAll(Colors.blue)),
               child: const Text("Register"),
             )
           ],

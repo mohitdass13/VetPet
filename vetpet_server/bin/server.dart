@@ -6,6 +6,7 @@ import 'package:shelf/shelf_io.dart';
 import 'package:shelf_router/shelf_router.dart';
 
 import 'api/authentication.dart';
+import 'api/user.dart';
 
 // Configure routes.
 final _router = Router()
@@ -15,7 +16,9 @@ final _router = Router()
   ..post('/api/signup/vet/', _signupVet)
   ..post('/api/signup/owner/', _signupOwner)
   ..post('/api/login/requestotp/', _otpRequest)
-  ..post('/api/login/verifyotp/', _otpVerify);
+  ..post('/api/login/verifyotp/', _otpVerify)
+  ..get('/api/vet/details', _vetInfo)
+  ..get('/api/owner/details', _ownerInfo);
 
 Response _rootHandler(Request req) {
   return Response.ok('Hello, World!\n');
@@ -27,6 +30,20 @@ Response _echoHandler(Request request) {
 }
 
 AuthApi auth = AuthApi();
+
+Future<bool> verifyUser(Request request, String role) async {
+  String? email = request.headers['email'];
+  String? key = request.headers['authorization'];
+  if (email == null || key == null) {
+    return false;
+  }
+  bool verified = await auth.verifyKey(email, key);
+  String userType = await auth.userType(email);
+  if (!verified || userType != role) {
+    return false;
+  }
+  return true;
+}
 
 Future<Response> _otpRequest(Request req) async {
   dynamic content = jsonDecode(await req.readAsString());
@@ -51,9 +68,7 @@ Future<Response> _otpVerify(Request req) async {
   }
   final verification = await auth.verifyOtp(email, otpInt);
   if (verification != null) {
-    return Response.ok(
-        "OTP Verified! Logging in as ${verification['user_type']}...",
-        headers: {'authorization': verification['api_key']});
+    return Response.ok(jsonEncode(verification));
   } else {
     return Response.forbidden("Incorrect OTP!");
   }
@@ -100,6 +115,28 @@ Future<Response> _signupOwner(Request req) async {
     return Response.ok('Owner added!');
   } else {
     return Response.internalServerError();
+  }
+}
+
+Future<Response> _vetInfo(Request request) async {
+  String email = request.headers['email']!;
+  final data =
+      await UserApi.getInfo(email, 'vet', !await verifyUser(request, 'vet'));
+  if (data == null) {
+    return Response.notFound("No vet");
+  } else {
+    return Response.ok(jsonEncode(data));
+  }
+}
+
+Future<Response> _ownerInfo(Request request) async {
+  String email = request.headers['email']!;
+  final data = await UserApi.getInfo(
+      email, 'owner', !await verifyUser(request, 'owner'));
+  if (data == null) {
+    return Response.notFound("No vet");
+  } else {
+    return Response.ok(jsonEncode(data));
   }
 }
 
