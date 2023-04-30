@@ -6,25 +6,23 @@ import 'package:vetpet/api/user.dart';
 import 'package:vetpet/types.dart';
 
 class Authentication {
-  static String baseUrl = "http://localhost:8080/api";
-
   static Future<Map<String, dynamic>> signupUser(
       String email, String role) async {
-    return Requests.postJson('$baseUrl/signup/add_user/', {
+    return Requests.postJson('/signup/add_user/', {
       "email": email,
       "role": role,
     });
   }
 
   static Future<Map<String, dynamic>> requestOtp(String email) async {
-    return await Requests.postJson('$baseUrl/login/requestotp/', {
+    return await Requests.postJson('/login/requestotp/', {
       "email": email,
     });
   }
 
   static Future<Map<String, dynamic>> verifyOtp(String email, String otp,
       {bool signup = false}) async {
-    final response = await Requests.postJson('$baseUrl/login/verifyotp/', {
+    final response = await Requests.postJson('/login/verifyotp/', {
       "email": email,
       "otp": otp,
     });
@@ -45,7 +43,7 @@ class Authentication {
 
   static Future<bool> fetchInfo() async {
     final response = await Requests.getJson(
-        '$baseUrl/${CurrentUser.role}/details',
+        '/${CurrentUser.role}/details',
         authorization: true);
     if (response['success']) {
       final data = jsonDecode(response['response']);
@@ -72,7 +70,7 @@ class Authentication {
 
   static Future<Map<String, dynamic>> addVet(
       String name, String phone, String working, String state) async {
-    final req = await Requests.postJson('$baseUrl/signup/vet/', {
+    final req = await Requests.postJson('/signup/vet/', {
       "name": name,
       "email": CurrentUser.userEmail,
       "phone": phone,
@@ -93,7 +91,7 @@ class Authentication {
 
   static Future<Map<String, dynamic>> addOwner(
       String name, String phone, String state) async {
-    final req = await Requests.postJson('$baseUrl/signup/owner/', {
+    final req = await Requests.postJson('/signup/owner/', {
       "name": name,
       "email": CurrentUser.userEmail,
       "phone": phone,
