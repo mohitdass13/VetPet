@@ -1,14 +1,6 @@
 import 'database.dart';
 
 class AuthDB {
-  static Future<bool> userExist(String email) async {
-    final result = await Database.connection.mappedResultsQuery(
-      'SELECT * FROM users WHERE emailid = @email',
-      substitutionValues: {'email': email},
-    );
-    return result.isNotEmpty;
-  }
-
   static Future<bool> saveOtp(String email, int otp) async {
     final result = await Database.connection.execute(
         "CALL store_otp(@email, @otp)",
@@ -29,14 +21,6 @@ class AuthDB {
         substitutionValues: {'email': email, 'api_key': apiKey});
   }
 
-  static Future<String> userType(String email) async {
-    final result = await Database.connection.mappedResultsQuery(
-      'SELECT * FROM users WHERE emailid = @email',
-      substitutionValues: {'email': email},
-    );
-    return result.first['users']?['role'] ?? 'Invalid';
-  }
-
   static Future<bool> verifyKey(String email, String key) async {
     var result = await Database.connection.mappedResultsQuery(
       'SELECT verify_key(@email, @key)',
@@ -51,7 +35,7 @@ class AuthDB {
         'INSERT INTO users VALUES (@email, @role) ON CONFLICT DO NOTHING',
         substitutionValues: {'email': email, 'role': role},
       );
-      return true;
+      return result > 0;
     } catch (e) {
       return false;
     }

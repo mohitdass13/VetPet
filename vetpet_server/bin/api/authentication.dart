@@ -5,6 +5,7 @@ import 'package:mailer/smtp_server.dart';
 import 'package:shelf/shelf.dart';
 
 import '../database/authentication.dart';
+import 'user.dart';
 
 /// Handles login and authentication
 class AuthApi {
@@ -19,7 +20,7 @@ class AuthApi {
   );
 
   Future<Response> sendOtp(String emailAddress) async {
-    if (!await AuthDB.userExist(emailAddress)) {
+    if (!await UserApi.userExist(emailAddress)) {
       return Response.unauthorized("Email does not exist");
     }
 
@@ -59,7 +60,7 @@ class AuthApi {
     if (verified) {
       String apiKey = generateRandomString(20);
       await AuthDB.storeLoggedIn(emailAddress, apiKey);
-      String userType = await AuthDB.userType(emailAddress);
+      String userType = (await UserApi.userType(emailAddress))!;
       return {'user_type': userType, 'api_key': apiKey};
     }
     return null;
@@ -67,10 +68,6 @@ class AuthApi {
 
   Future<bool> verifyKey(String email, String key) {
     return AuthDB.verifyKey(email, key);
-  }
-
-  Future<String> userType(String email) {
-    return AuthDB.userType(email);
   }
 
   Future<bool> addUser(String email, String role) async {
@@ -83,7 +80,7 @@ class AuthApi {
 
   Future<bool> addVet(String email, String name, String phone, String wTime,
       String state) async {
-    if (await AuthDB.userType(email) == 'vet') {
+    if (await UserApi.userType(email) == 'vet') {
       return AuthDB.addVet(email, name, phone, wTime, state);
     }
     return false;
@@ -91,7 +88,7 @@ class AuthApi {
 
   Future<bool> addOwner(
       String email, String name, String phone, String state) async {
-    if (await AuthDB.userType(email) == 'owner') {
+    if (await UserApi.userType(email) == 'owner') {
       return AuthDB.addOwner(email, name, phone, state);
     }
     return false;

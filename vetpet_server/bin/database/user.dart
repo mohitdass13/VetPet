@@ -12,4 +12,12 @@ class UserDB {
     }
     return null;
   }
+
+  static Future<String> userType(String email) async {
+    final result = await Database.connection.mappedResultsQuery(
+      'SELECT * FROM users WHERE emailid = @email',
+      substitutionValues: {'email': email},
+    );
+    return result.first['users']?['role'] ?? 'Invalid';
+  }
 }

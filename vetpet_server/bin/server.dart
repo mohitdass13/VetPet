@@ -6,7 +6,9 @@ import 'package:shelf/shelf_io.dart';
 import 'package:shelf_router/shelf_router.dart';
 
 import 'api/authentication.dart';
+import 'api/chat.dart';
 import 'api/user.dart';
+import 'database/chat.dart';
 
 // Configure routes.
 final _router = Router()
@@ -18,7 +20,9 @@ final _router = Router()
   ..post('/api/login/requestotp/', _otpRequest)
   ..post('/api/login/verifyotp/', _otpVerify)
   ..get('/api/vet/details', _vetInfo)
-  ..get('/api/owner/details', _ownerInfo);
+  ..get('/api/owner/details', _ownerInfo)
+  ..post('/api/chat/send', _chatSend)
+  ..get('/api/chat/retrieve', _chatRetrieve);
 
 Response _rootHandler(Request req) {
   return Response.ok('Hello, World!\n');
@@ -31,18 +35,20 @@ Response _echoHandler(Request request) {
 
 AuthApi auth = AuthApi();
 
-Future<bool> verifyUser(Request request, String role) async {
+Future<bool> verifyUser(Request request, String? role) async {
   String? email = request.headers['email'];
   String? key = request.headers['authorization'];
   if (email == null || key == null) {
     return false;
   }
   bool verified = await auth.verifyKey(email, key);
-  String userType = await auth.userType(email);
-  if (!verified || userType != role) {
-    return false;
+  if (role != null) {
+    String? userType = await UserApi.userType(email);
+    if (!verified || userType != role) {
+      return false;
+    }
   }
-  return true;
+  return verified;
 }
 
 Future<Response> _otpRequest(Request req) async {
@@ -130,6 +136,35 @@ Future<Response> _vetInfo(Request request) async {
 }
 
 Future<Response> _ownerInfo(Request request) async {
+  String email = request.headers['email']!;
+  final data = await UserApi.getInfo(
+      email, 'owner', !await verifyUser(request, 'owner'));
+  if (data == null) {
+    return Response.notFound("No owner");
+  } else {
+    return Response.ok(jsonEncode(data));
+  }
+}
+
+Future<Response> _chatSend(Request request) async {
+  Map<String, dynamic> content = jsonDecode(await request.readAsString());
+  String? email = request.headers['email'];
+  verifyUser(request, null);
+  String? to = content['to'];
+  String? message = content['message'];
+
+  if (email == null || to == null || message == null) {
+    return Response.badRequest();
+  } else {
+    if (await ChatAPI.sendMessage(email, to, message)) {
+      return Response.ok("Message sent");
+    } else {
+      return Response.internalServerError();
+    }
+  }
+}
+
+Future<Response> _chatRetrieve(Request request) async {
   String email = request.headers['email']!;
   final data = await UserApi.getInfo(
       email, 'owner', !await verifyUser(request, 'owner'));

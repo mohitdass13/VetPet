@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS message (
     text VARCHAR,
     from_id VARCHAR,
     to_id VARCHAR,
-    time TIMESTAMP,
+    time TIMESTAMP default current_timestamp,
     FOREIGN KEY(from_id) references users(emailid),
     FOREIGN KEY(to_id) references users(emailid)
 );

@@ -12,4 +12,13 @@ class UserApi {
     }
     return data;
   }
+
+  static Future<String?> userType(String email) async {
+    final type = await UserDB.userType(email);
+    return type != 'Invalid' ? type : null;
+  }
+
+  static Future<bool> userExist(String email) async {
+    return await userType(email) != null;
+  }
 }
