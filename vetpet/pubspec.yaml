@@ -38,6 +38,7 @@ dependencies:
   http: ^0.13.5
   mailer: ^6.0.0
   shared_preferences: ^2.1.0
+  intl: ^0.18.1
 
 dev_dependencies:
   flutter_test:

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vetpet/types.dart';
 
 class OwnerChat extends StatelessWidget {
   const OwnerChat({super.key});
@@ -8,6 +9,11 @@ class OwnerChat extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Chat'),
+      ),
+      body: ElevatedButton(
+        child: const Text("chat"),
+        onPressed: () => Navigator.pushNamed(context, '/chat',
+            arguments: User('v@a.s', 'name', 'state', 'phone')),
       ),
     );
   }

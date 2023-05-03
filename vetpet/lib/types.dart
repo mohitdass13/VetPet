@@ -28,5 +28,7 @@ class Pet {
 class Message {
   String text;
   bool byCurrent;
-  Message(this.text, this.byCurrent);
+  DateTime time;
+  Future<Map<String, dynamic>>? sendResponse;
+  Message(this.text, this.byCurrent, this.time, {this.sendResponse});
 }

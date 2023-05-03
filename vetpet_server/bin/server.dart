@@ -8,7 +8,6 @@ import 'package:shelf_router/shelf_router.dart';
 import 'api/authentication.dart';
 import 'api/chat.dart';
 import 'api/user.dart';
-import 'database/chat.dart';
 
 // Configure routes.
 final _router = Router()
@@ -148,8 +147,10 @@ Future<Response> _ownerInfo(Request request) async {
 
 Future<Response> _chatSend(Request request) async {
   Map<String, dynamic> content = jsonDecode(await request.readAsString());
+  if (!await verifyUser(request, null)) {
+    return Response.unauthorized('Invalid credentials');
+  }
   String? email = request.headers['email'];
-  verifyUser(request, null);
   String? to = content['to'];
   String? message = content['message'];
 
@@ -165,14 +166,18 @@ Future<Response> _chatSend(Request request) async {
 }
 
 Future<Response> _chatRetrieve(Request request) async {
-  String email = request.headers['email']!;
-  final data = await UserApi.getInfo(
-      email, 'owner', !await verifyUser(request, 'owner'));
-  if (data == null) {
-    return Response.notFound("No vet");
-  } else {
-    return Response.ok(jsonEncode(data));
+  if (!await verifyUser(request, null)) {
+    return Response.unauthorized('Invalid credentials');
   }
+  Map<String, dynamic> content = request.requestedUri.queryParameters;
+
+  String email = request.headers['email']!;
+  String other = content['other'];
+  String time = content['time'];
+
+  final data = await ChatAPI.retrieveMessagesJSON(email, other, DateTime.parse(time));
+  
+  return Response.ok(data);
 }
 
 void main(List<String> args) async {

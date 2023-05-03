@@ -4,7 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:vetpet/api/user.dart';
 
 abstract class Requests {
-  static String baseUrl = "http://localhost:8080/api";
+  static String host = 'localhost:8080';
+  static String baseUrl = "/api";
 
   static Future<Map<String, dynamic>> postJson(
       String route, Map<String, dynamic> data,
@@ -19,7 +20,7 @@ abstract class Requests {
     }
     try {
       http.Response response = await http.post(
-        Uri.parse('$baseUrl$route'),
+        Uri.http(host, '$baseUrl$route'),
         headers: headers,
         body: jsonEncode(data),
       );
@@ -43,7 +44,7 @@ abstract class Requests {
     }
     try {
       http.Response response = await http.get(
-        Uri.parse('$baseUrl$route'),
+        Uri.http(host, '$baseUrl$route', parameters),
         headers: headers,
       );
       message = response.body;

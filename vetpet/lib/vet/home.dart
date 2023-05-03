@@ -11,10 +11,10 @@ class VetHome extends StatefulWidget {
 
 class _VetHomeState extends State<VetHome> {
   List<Owner> clients = [
-    Owner("test1@gmial.com", "Client 1", '', ''),
+    Owner("o@a.s", "Client 1", '', ''),
     Owner("test2@gmial.com", "Client 2", '', ''),
     Owner("test3@gmial.com", "Client 3", '', ''),
-    Owner("test4@gmial.com", "Client 4", '',''),
+    Owner("test4@gmial.com", "Client 4", '', ''),
   ];
 
   @override
