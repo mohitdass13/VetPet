@@ -43,28 +43,34 @@ class _AddPetState extends State<AddPet> {
         ),
         actions: [
           TextButton(
-            onPressed: () async {
-              bool added = await PetApi.addPet(Pet(
-                0,
-                controllers['name']!.value.text,
-                int.parse(controllers['age']!.value.text),
-                breedValue!,
-                double.parse(controllers['weight']!.value.text),
-              ));
-              if (mounted) {
-                if (added) {
-                  Navigator.pop(context);
-                  Utils.showSnackbar(context, "Pet Added");
-                } else {
-                  Utils.showSnackbar(context, "Error");
-                }
-              }
-            },
+            onPressed: (breedValue != null &&
+                    controllers['name']!.value.text.isNotEmpty &&
+                    controllers['age']!.value.text.isNotEmpty &&
+                    controllers['weight']!.value.text.isNotEmpty)
+                ? () async {
+                    bool added = await PetApi.addPet(Pet(
+                      0,
+                      controllers['name']!.value.text,
+                      int.parse(controllers['age']!.value.text),
+                      breedValue!,
+                      double.parse(controllers['weight']!.value.text),
+                    ));
+                    if (mounted) {
+                      if (added) {
+                        Navigator.pop(context);
+                        Utils.showSnackbar(
+                            context, "Pet Added! Tap refresh to show!");
+                      } else {
+                        Utils.showSnackbar(context, "Error");
+                      }
+                    }
+                  }
+                : null,
             child: const Text(
               'Add',
               style: TextStyle(
                 fontSize: 17,
-                color: Colors.blue,
+                // color: Colors.blue,
               ),
             ),
           ),

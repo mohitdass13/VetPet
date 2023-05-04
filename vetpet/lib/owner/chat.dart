@@ -8,7 +8,14 @@ class OwnerChat extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chat'),
+        title: const Text('Veterinarians'),
+        actions: [
+          ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/owner/search_vet');
+              },
+              child: const Text('Search Vetenarian')),
+        ],
       ),
       body: ElevatedButton(
         child: const Text("chat"),

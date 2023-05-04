@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vetpet/api/pet_api.dart';
 import 'package:vetpet/api/user.dart';
 
 import '../types.dart';
@@ -11,7 +12,15 @@ class VetList extends StatefulWidget {
 }
 
 class _VetListState extends State<VetList> {
-  Owner owner = CurrentUser.user as Owner;
+  late Future<List<Vet>> vets;
+
+  @override
+  void initState() {
+    vets = PetApi.getVetList();
+    super.initState();
+  }
+
+  Owner owner = CurrentUser.owner!;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,12 +29,25 @@ class _VetListState extends State<VetList> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
-        child: ListView(
-          children: owner.vets
-              .map((e) => VetCard(
-                    vet: e,
-                  ))
-              .toList(),
+        child: FutureBuilder(
+          future: vets,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const SizedBox(
+                height: 70,
+                child: Center(child: CircularProgressIndicator()),
+              );
+            } else if (snapshot.hasData) {
+              return ListView(
+                children: snapshot.data!.map((e) => VetCard(vet: e)).toList(),
+              );
+            } else {
+              return const SizedBox(
+                height: 70,
+                child: Center(child: Text("Error getting data!")),
+              );
+            }
+          },
         ),
       ),
     );
@@ -37,43 +59,118 @@ class VetCard extends StatelessWidget {
     super.key,
     required this.vet,
   });
-  // final PetHistory history;
-  final VetClass vet;
+  final Vet vet;
 
   @override
   Widget build(BuildContext context) {
-    // String date = DateFormat('dd/mm/yyyy').format(history.date);
-
     return SizedBox(
       width: double.infinity,
       child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                  child: Text(
-                vet.name,
-                style: const TextStyle(fontSize: 20),
-              )),
-              const SizedBox(
-                height: 10,
-              ),
-              Text('State: ${vet.state}', style: const TextStyle(fontSize: 17)),
-              const SizedBox(
-                height: 10,
-              ),
-              // Text('Date: ${date}', style: const TextStyle(fontSize: 17)),
-              const SizedBox(
-                height: 10,
-              ),
-              Text('Working Time: ${vet.wTime}',
-                  style: const TextStyle(fontSize: 17)),
-            ],
+        child: InkWell(
+          onTap: () => showDialog(
+            context: context,
+            builder: (context) => const RequestDialog(),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                    child: Text(
+                  vet.name,
+                  style: const TextStyle(fontSize: 20),
+                )),
+                const SizedBox(
+                  height: 10,
+                ),
+                Text('Email: ${vet.email}',
+                    style: const TextStyle(fontSize: 17)),
+                const SizedBox(
+                  height: 10,
+                ),
+                Text('State: ${vet.state}',
+                    style: const TextStyle(fontSize: 17)),
+                const SizedBox(
+                  height: 5,
+                ),
+                Text('Working Time: ${vet.wTime}',
+                    style: const TextStyle(fontSize: 17)),
+              ],
+            ),
           ),
         ),
       ),
+    );
+  }
+}
+
+class RequestDialog extends StatefulWidget {
+  const RequestDialog({super.key});
+
+  @override
+  State<RequestDialog> createState() => _RequestDialogState();
+}
+
+class _RequestDialogState extends State<RequestDialog> {
+  late List<bool> selected;
+  late List<Pet> pets;
+  @override
+  void initState() {
+    pets = CurrentUser.owner!.pets;
+    selected = List.generate(pets.length, (index) => false);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Request'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Select pet(s):',
+            style: TextStyle(fontSize: 16),
+          ),
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.8,
+            height: MediaQuery.of(context).size.height * 0.8 - 200,
+            child: Flexible(
+              child: ListView(
+                shrinkWrap: true,
+                children: List.generate(
+                  pets.length,
+                  (index) => ListTile(
+                    title: Text(pets[index].name),
+                    subtitle: Text(pets[index].breed),
+                    selected: selected[index],
+                    trailing: Icon(selected[index]
+                        ? Icons.check_box
+                        : Icons.check_box_outline_blank),
+                    onTap: () {
+                      setState(() {
+                        selected[index] = !selected[index];
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        ElevatedButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: (selected.contains(true)) ? () {} : null,
+          child: const Text('Send request'),
+        ),
+      ],
     );
   }
 }

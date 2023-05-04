@@ -8,6 +8,7 @@ import 'package:shelf_router/shelf_router.dart';
 import 'api/authentication.dart';
 import 'api/chat.dart';
 import 'api/user.dart';
+import 'database/user.dart';
 
 // Configure routes.
 final _router = Router()
@@ -19,11 +20,15 @@ final _router = Router()
   ..post('/api/login/requestotp/', _otpRequest)
   ..post('/api/login/verifyotp/', _otpVerify)
   ..get('/api/vet/details', _vetInfo)
+  ..get('/api/vet/list', _vetList)
   ..get('/api/owner/details', _ownerInfo)
   ..post('/api/chat/send', _chatSend)
   ..get('/api/chat/retrieve', _chatRetrieve)
   ..post('/api/pet/add', _addPet)
-  ..get('/api/owner/pets', _getPets);
+  ..post('/api/pet/remove', _removePet)
+  ..get('/api/owner/pets', _getPets)
+  ..post('/api/owner/request', _requestVet);
+
 Response _rootHandler(Request req) {
   return Response.ok('Hello, World!\n');
 }
@@ -111,20 +116,35 @@ Future<Response> _signupVet(Request req) async {
 }
 
 Future<Response> _addPet(Request request) async {
+  if (!await verifyUser(request, 'owner')) {
+    return Response.unauthorized('invalid user');
+  }
   Map<String, dynamic> content = jsonDecode(await request.readAsString());
   String name = content['name'];
   String breed = content['breed'];
   double weight = content['weight'];
   int age = content['age'];
   String? email = request.headers['email'];
-  if (!await verifyUser(request, null)) {
-    return Response.unauthorized('invalid user');
-  }
 
   if (await UserApi.addPet(name, age, weight, breed, email!)) {
     return Response.ok('Pet added!');
   } else {
     return Response.internalServerError();
+  }
+}
+
+Future<Response> _removePet(Request request) async {
+  if (!await verifyUser(request, null)) {
+    return Response.unauthorized('invalid user');
+  }
+  String? email = request.headers['email'];
+  Map<String, dynamic> content = jsonDecode(await request.readAsString());
+
+  final removed = await UserApi.removePet(content['id'], email!);
+  if (removed) {
+    return Response.ok('Pet removed');
+  } else {
+    return Response.notFound('No pet found');
   }
 }
 
@@ -164,6 +184,15 @@ Future<Response> _vetInfo(Request request) async {
   }
 }
 
+Future<Response> _vetList(Request request) async {
+  if (!await verifyUser(request, null)) {
+    return Response.unauthorized('Invalid credentials');
+  }
+
+  final data = await UserApi.getVets();
+  return Response.ok(jsonEncode(data));
+}
+
 Future<Response> _ownerInfo(Request request) async {
   String email = request.headers['email']!;
   final data = await UserApi.getInfo(
@@ -195,6 +224,19 @@ Future<Response> _chatSend(Request request) async {
   }
 }
 
+Future<Response> _requestVet(Request request) async {
+  if (!await verifyUser(request, null)) {
+    return Response.unauthorized('Invalid credentials');
+  }
+  String? email = request.headers['email'];
+
+  Map<String, dynamic> content = request.requestedUri.queryParameters;
+  List<int> ids = content['pet_ids'];
+  String vetEmail = content['vet_id'];
+
+  return Response.ok('');
+}
+
 Future<Response> _chatRetrieve(Request request) async {
   if (!await verifyUser(request, null)) {
     return Response.unauthorized('Invalid credentials');
@@ -205,8 +247,9 @@ Future<Response> _chatRetrieve(Request request) async {
   String other = content['other'];
   String time = content['time'];
 
-  final data = await ChatAPI.retrieveMessagesJSON(email, other, DateTime.parse(time));
-  
+  final data =
+      await ChatAPI.retrieveMessagesJSON(email, other, DateTime.parse(time));
+
   return Response.ok(data);
 }
 

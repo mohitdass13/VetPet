@@ -20,9 +20,9 @@ class OwnerTabs extends StatelessWidget {
         ),
         TabData(
           body: OwnerChat(),
-          tabTitle: "Chat",
-          inactiveIcon: Icons.chat_outlined,
-          activeIcon: Icons.chat_bubble,
+          tabTitle: "Vets",
+          inactiveIcon: Icons.local_hospital_outlined,
+          activeIcon: Icons.local_hospital,
         ),
         TabData(
           body: OwnerNotifications(),

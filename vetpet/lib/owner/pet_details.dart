@@ -1,6 +1,8 @@
 // ignore: avoid_web_libraries_in_flutter
 
 import 'package:flutter/material.dart';
+import 'package:vetpet/api/pet_api.dart';
+import 'package:vetpet/common/utils.dart';
 
 import '../types.dart';
 // ignore: depend_on_referenced_packages
@@ -19,7 +21,48 @@ class _PetDetailsState extends State<PetDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.pet.name),
+        title: const Text('Pet Details'),
+        actions: [
+          IconButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text("Remove pet"),
+                    content: const Text(
+                        "Are you sure to remove this pet data and delete all its data?"),
+                    actions: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.errorContainer,
+                          foregroundColor: Theme.of(context).colorScheme.error,
+                        ),
+                        onPressed: () async {
+                          if (await PetApi.removePet(widget.pet)) {
+                            if (mounted) {
+                              Utils.showSnackbar(context, "Pet removed!");
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                            }
+                          } else {
+                            if (mounted) {
+                              Utils.showSnackbar(context, "Error!");
+                            }
+                          }
+                        },
+                        child: const Text("Confirm"),
+                      ),
+                      ElevatedButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text("Cancel"),
+                      ),
+                    ],
+                  ),
+                );
+              },
+              icon: const Icon(Icons.delete))
+        ],
       ),
       body: Padding(
         // padding: const EdgeInsets.all(8.0),
@@ -29,6 +72,21 @@ class _PetDetailsState extends State<PetDetails> {
           children: [
             const SizedBox(
               height: 10,
+            ),
+            Row(
+              children: [
+                const Icon(Icons.person),
+                const SizedBox(
+                  width: 10,
+                ),
+                Text(
+                  'Name: ${widget.pet.name}',
+                  style: const TextStyle(fontSize: 17),
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 20,
             ),
             Row(
               children: [

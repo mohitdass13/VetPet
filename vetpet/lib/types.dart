@@ -11,18 +11,12 @@ class Vet extends User {
   String wTime;
 }
 
-
-
 class Owner extends User {
-  List<Pet> pets = [
-    Pet(0, "Pet1", 10, "German Shepherd", 12.0),
-    Pet(1, "Pet2", 10, "German Shepherd", 12.0),
-    Pet(2, "Pet3", 10, "German Shepherd", 12.0)
-  ];
-  List<VetClass> vets = [
-    VetClass("Vet1", "Punjab", "Mon-Fri 9:00-17:00"),
-    VetClass("Vet2", "Punjab", "Mon-Fri 9:00-17:00"),
-  ];
+  List<Pet> pets = [];
+  // List<VetClass> vets = [
+  //   VetClass("Vet1", "Punjab", "Mon-Fri 9:00-17:00"),
+  //   VetClass("Vet2", "Punjab", "Mon-Fri 9:00-17:00"),
+  // ];
   // List<Pet> pets = PetApi.getPets() as List<Pet>;
 
   Owner(super.email, super.name, super.state, super.phone);
@@ -64,11 +58,4 @@ class PetHistory {
   DateTime date;
   String type;
   PetHistory(this.id, this.name, this.description, this.date, this.type);
-}
-
-class VetClass {
-  String name;
-  String state;
-  String wTime;
-  VetClass(this.name, this.state, this.wTime);
 }
