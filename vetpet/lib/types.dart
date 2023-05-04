@@ -1,7 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:file_picker/file_picker.dart';
-
 class User {
   String name;
   String email;
@@ -13,17 +11,57 @@ class User {
 class Vet extends User {
   Vet(super.email, super.name, super.state, super.phone, this.wTime);
   String wTime;
+
+  List<Owner> clients = [];
+  List<Owner> requests = [];
+
+  void clearLists() {
+    clients = [];
+    requests = [];
+  }
+
+  void addConnections(Owner owner, bool approved) {
+    if (approved) {
+      clients.add(owner);
+    } else {
+      requests.add(owner);
+    }
+  }
 }
-
-
 
 class Owner extends User {
   List<Pet> pets = [];
-  // List<VetClass> vets = [
-  //   VetClass("Vet1", "Punjab", "Mon-Fri 9:00-17:00"),
-  //   VetClass("Vet2", "Punjab", "Mon-Fri 9:00-17:00"),
-  // ];
-  // List<Pet> pets = PetApi.getPets() as List<Pet>;
+  List<int> petIds = [];
+
+  Map<String, List<int>> connections = {};
+  Map<Vet, bool> approvals = {};
+
+  Pet getPet(int id) {
+    return pets.firstWhere((e) => e.id == id);
+  }
+
+  String petNameList(String vetId) {
+    return connections[vetId]!.map((e) => getPet(e).name).join(', ');
+  }
+
+  void addConnection(Vet vet, int petId, bool approved) {
+    if (connections.containsKey(vet.email)) {
+      if (!connections[vet.email]!.contains(petId)) {
+        connections[vet.email]!.add(petId);
+      }
+    } else {
+      connections[vet.email] = [petId];
+      approvals[vet] = approved;
+    }
+  }
+
+  bool getApproved(String vetId) {
+    return approvals[getVet(vetId)]!;
+  }
+
+  Vet getVet(String vetId) {
+    return approvals.keys.firstWhere((e) => e.email == vetId);
+  }
 
   Owner(super.email, super.name, super.state, super.phone);
 }
@@ -37,14 +75,7 @@ class Pet {
   String breed;
   double weight;
 
-  List<PetHistory> history = [
-  //   PetHistory.withoutFile(
-  //       0, "Pain medication", "Description", DateTime.now(), "Vaccination"),
-  //   PetHistory.withoutFile(1, "Heartworm medication", "Description", DateTime.now(),
-  //       "Vaccination"),
-  //   PetHistory.withoutFile(
-  //       2, "Deworming medication", "Description", DateTime.now(), "Vaccination")
-  ];
+  List<PetHistory> history = [];
 
   Pet(this.id, this.name, this.age, this.breed, this.weight);
 }
@@ -67,9 +98,11 @@ class PetHistory {
   String? fileName;
   Uint8List? fileData;
 
-  PetHistory(
-      this.petId, this.name, this.description, this.date, this.type, this.fileName, this.fileData);
+  PetHistory(this.petId, this.name, this.description, this.date, this.type,
+      this.fileName, this.fileData);
 
-  PetHistory.withId(this.id, this.petId, this.name, this.description, this.date, this.type, this.fileName, this.fileData);
-  PetHistory.withoutFile(this.id, this.name, this.description, this.date, this.type);
+  PetHistory.withId(this.id, this.petId, this.name, this.description, this.date,
+      this.type, this.fileName, this.fileData);
+  PetHistory.withoutFile(
+      this.id, this.name, this.description, this.date, this.type);
 }

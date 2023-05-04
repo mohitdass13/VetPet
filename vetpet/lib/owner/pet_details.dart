@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
-import 'package:vetpet/api/pet_api.dart';
+import 'package:vetpet/api/owner_api.dart';
 import 'package:vetpet/common/utils.dart';
 
 import '../types.dart';
@@ -24,7 +24,7 @@ class _PetDetailsState extends State<PetDetails> {
   late Future<List<PetHistory>> history;
 
   Future<List<PetHistory>> refresh() async {
-    bool success = await PetApi.getHistory(widget.pet);
+    bool success = await OwnerApi.getHistory(widget.pet);
     if (success) {
       return widget.pet.history;
     } else {
@@ -34,7 +34,6 @@ class _PetDetailsState extends State<PetDetails> {
 
   @override
   void initState() {
-    // TODO: implement initState
     history = refresh();
     super.initState();
   }
@@ -61,7 +60,7 @@ class _PetDetailsState extends State<PetDetails> {
                           foregroundColor: Theme.of(context).colorScheme.error,
                         ),
                         onPressed: () async {
-                          if (await PetApi.removePet(widget.pet)) {
+                          if (await OwnerApi.removePet(widget.pet)) {
                             if (mounted) {
                               Utils.showSnackbar(context, "Pet removed!");
                               Navigator.pop(context);
@@ -185,7 +184,7 @@ class _PetDetailsState extends State<PetDetails> {
                           ),
                         ],
                       ),
-                      Container(
+                      SizedBox(
                         width: double.infinity,
                         height: 50,
                         child: Align(

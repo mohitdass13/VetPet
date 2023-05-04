@@ -5,7 +5,7 @@ import 'package:vetpet/api/requests.dart';
 import 'package:vetpet/api/user.dart';
 import 'package:vetpet/types.dart';
 
-class PetApi {
+class OwnerApi {
   static Future<bool> addPet(Pet pet) async {
     final req = await Requests.postJson(
         '/pet/add',
@@ -30,28 +30,6 @@ class PetApi {
       return true;
     } else {
       return false;
-    }
-  }
-
-  static Future<bool> getHistory(Pet pet) async {
-    final req = await Requests.getJson('/pet/history', parameters: {
-      'pet_id': pet.id.toString(),
-    }, authorization: true);
-    if (req['success']){
-      final histories = jsonDecode(req['response']) as List<dynamic>;
-      pet.history = histories.map((e) => PetHistory.withId(
-        e['id'],
-        e['pet_id'],
-        e['name'],
-        e['description'],
-        DateTime.parse(e['date']),
-        e['type'],
-        e['file_name'],
-        e['file_data'] == null ? null : Uint8List.view(e['file_data'].buffer),
-      )).toList();
-      return Future.value(true);
-    } else {
-      return Future.value(false);
     }
   }
 
@@ -81,21 +59,70 @@ class PetApi {
   static Future<bool> sendRequest(List<Pet> pets, String vetId) async {
     List<int> petIds = pets.map((e) => e.id).toList();
 
-    final req = await Requests.postJson('/owner/request', {
-      'pet_ids': petIds,
-      'vet_id': vetId,
-    }, authorization: true);
+    final req = await Requests.postJson(
+        '/owner/request',
+        {
+          'pet_ids': petIds,
+          'vet_id': vetId,
+        },
+        authorization: true);
     return req['success'];
   }
 
-  static Future<bool> addHistory (PetHistory history) async {
+  static Future<bool> refreshConnections() async {
+    final req =
+        await Requests.getJson('/owner/connections', authorization: true);
+    if (req['success']) {
+      final connections = jsonDecode(req['response']) as List<dynamic>;
+      CurrentUser.owner!.approvals = {};
+      CurrentUser.owner!.connections = {};
+      for (var conn in connections) {
+        Vet vet = Vet(conn['vet_id'], conn['vet_name'], '', '', '');
+        CurrentUser.owner!.addConnection(vet, conn['pet_id'], conn['approved']);
+      }
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  static Future<bool> getHistory(Pet pet) async {
+    final req = await Requests.getJson('/pet/history',
+        parameters: {
+          'pet_id': pet.id.toString(),
+        },
+        authorization: true);
+    if (req['success']) {
+      final histories = jsonDecode(req['response']) as List<dynamic>;
+      pet.history = histories
+          .map((e) => PetHistory.withId(
+                e['id'],
+                e['pet_id'],
+                e['name'],
+                e['description'],
+                DateTime.parse(e['date']),
+                e['type'],
+                e['file_name'],
+                e['file_data'] == null
+                    ? null
+                    : Uint8List.view(e['file_data'].buffer),
+              ))
+          .toList();
+      return Future.value(true);
+    } else {
+      return Future.value(false);
+    }
+  }
+
+  static Future<bool> addHistory(PetHistory history) async {
     final req = await Requests.postJson(
         '/vet/client/pet/add_history/add',
         {
           "pet_id": history.petId,
           "name": history.name,
           "description": history.description,
-          "date": "${history.date.year}-${history.date.month}-${history.date.day}",
+          "date":
+              "${history.date.year}-${history.date.month}-${history.date.day}",
           "type": history.type,
           "file_name": history.fileName,
           "file_data": history.fileData?.join(","),

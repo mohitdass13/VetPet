@@ -65,4 +65,19 @@ class UserApi {
       return false;
     }
   }
+
+  static Future<List<Map<String, dynamic>>> ownerConnections(
+      String email) async {
+    return await UserDB.ownerConnections(email);
+  }
+
+  static Future<List<Map<String, dynamic>>> vetConnections(
+      String email) async {
+    return await UserDB.vetConnections(email);
+  }
+
+  static Future<List<Map<String, dynamic>>> vetAccept(
+      String vetId, String ownerId) async {
+    return await UserDB.vetConnections(vetId, ownerId);
+  }
 }

@@ -52,7 +52,8 @@ class UserDB {
 
   static Future<bool> addHistory(String petId, String name, String description,
       String date, String type, String? fileName, ByteData fileData) async {
-    final result = await Database.connection.execute( 'INSERT INTO pet_history(pet_id,name,description,date,type,file_name,file_data) VALUES($petId,@name,@description,@date,@type,@file_name,@file_data)',
+    final result = await Database.connection.execute(
+      'INSERT INTO pet_history(pet_id,name,description,date,type,file_name,file_data) VALUES($petId,@name,@description,@date,@type,@file_name,@file_data)',
       substitutionValues: {
         'name': name,
         'description': description,
@@ -62,10 +63,11 @@ class UserDB {
         'file_data': fileData,
       },
     );
-    return result>0;
+    return result > 0;
   }
 
-  static Future<List<Map<String, Map<String, dynamic>>>> getHistory(String petId) async {
+  static Future<List<Map<String, Map<String, dynamic>>>> getHistory(
+      String petId) async {
     final result = await Database.connection.mappedResultsQuery(
       'SELECT * FROM pet_history WHERE pet_id = @pet_id',
       substitutionValues: {'pet_id': petId},
@@ -102,6 +104,54 @@ class UserDB {
 
     final result = await Database.connection.execute(
       'INSERT INTO connections VALUES ${values.join(',')} ON CONFLICT DO NOTHING',
+    );
+    print(result);
+    return result > 0;
+  }
+
+  static Future<List<Map<String, dynamic>>> ownerConnections(
+      String email) async {
+    final result = await Database.connection.mappedResultsQuery('''
+          SELECT c.pet_id, c.vet_id, c.approved, p.name AS pet_name, 
+            v.name AS vet_name, v.emailid AS vet_id 
+          FROM connections c NATURAL JOIN pet p JOIN vet v ON c.vet_id = v.emailid 
+          WHERE p.owner_emailid=@email
+        ''', substitutionValues: {'email': email});
+    List<Map<String, dynamic>> data = result.map((e) {
+      Map<String, dynamic> temp = {};
+      e.forEach((key, value) {
+        temp.addAll(value);
+      });
+      return temp;
+    }).toList();
+    return data;
+  }
+
+  static Future<List<Map<String, dynamic>>> vetConnections(String email) async {
+    final result = await Database.connection.mappedResultsQuery('''
+          SELECT DISTINCT c.approved as approved, p.owner_emailid as owner_email, 
+            o.name as owner_name
+          FROM connections c 
+            NATURAL JOIN pet p 
+            JOIN vet v ON c.vet_id = v.emailid 
+            JOIN owner o ON o.emailid = p.owner_emailid
+          WHERE c.vet_id=@email
+        ''', substitutionValues: {'email': email});
+    List<Map<String, dynamic>> data = result.map((e) {
+      Map<String, dynamic> temp = {};
+      e.forEach((key, value) {
+        temp.addAll(value);
+      });
+      return temp;
+    }).toList();
+    return data;
+  }
+
+
+  static Future<bool> vetAccept(String vetEmail, String owner) async {
+
+    final result = await Database.connection.execute(
+      'UPDATE connections WHERE ',
     );
     print(result);
     return result > 0;

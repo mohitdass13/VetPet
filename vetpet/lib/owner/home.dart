@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:vetpet/api/pet_api.dart';
+import 'package:vetpet/api/owner_api.dart';
 import 'package:vetpet/api/user.dart';
 import 'package:vetpet/types.dart';
 
@@ -54,7 +54,7 @@ class _PetsListState extends State<PetsList> {
   late Future<List<Pet>> pets;
 
   Future<List<Pet>> refresh() async {
-    bool success = await PetApi.refreshPets();
+    bool success = await OwnerApi.refreshPets();
     if (success) {
       return CurrentUser.owner!.pets;
     } else {

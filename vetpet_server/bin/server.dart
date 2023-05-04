@@ -10,7 +10,6 @@ import 'package:shelf_router/shelf_router.dart';
 import 'api/authentication.dart';
 import 'api/chat.dart';
 import 'api/user.dart';
-import 'database/user.dart';
 
 // Configure routes.
 final _router = Router()
@@ -32,7 +31,12 @@ final _router = Router()
   ..post('/api/pet/remove', _removePet)
   ..get('/api/owner/pets', _getPets)
   ..post('/api/owner/request', _requestVet)
-  ..get('/pet/history', _getHistory);
+  ..get('/api/owner/connections', _ownerConnections)
+  ..get('/api/vet/connections', _vetConnections)
+  ..post('/api/owner/request', _requestVet)
+  ..get('/pet/history', _getHistory)
+  ..post('/vet/accept', _vetAccept)
+  ;
 
 Response _rootHandler(Request req) {
   return Response.ok('Hello, World!\n');
@@ -260,16 +264,56 @@ Future<Response> _chatSend(Request request) async {
 }
 
 Future<Response> _requestVet(Request request) async {
-  if (!await verifyUser(request, null)) {
+  if (!await verifyUser(request, 'owner')) {
     return Response.unauthorized('Invalid credentials');
   }
-  String? email = request.headers['email'];
+  String email = request.headers['email']!;
 
-  Map<String, dynamic> content = request.requestedUri.queryParameters;
-  List<int> ids = content['pet_ids'];
+  Map<String, dynamic> content = jsonDecode(await request.readAsString());
+  List<int> petIds = (content['pet_ids'] as List<dynamic>).cast<int>();
   String vetEmail = content['vet_id'];
 
-  return Response.ok('');
+  if (await UserApi.requestVet(petIds, vetEmail, email)) {
+    return Response.ok('Request sent');
+  } else {
+    return Response.internalServerError();
+  }
+}
+
+Future<Response> _vetAccept(Request request) async {
+  if (!await verifyUser(request, 'owner')) {
+    return Response.unauthorized('Invalid credentials');
+  }
+  String email = request.headers['email']!;
+  Map<String, dynamic> content = jsonDecode(await request.readAsString());
+
+  String owner = content['owner_id'];
+
+  if (await UserApi.vetAccept(petIds, vetEmail, email)) {
+    return Response.ok('Request sent');
+  } else {
+    return Response.internalServerError();
+  }
+}
+
+Future<Response> _ownerConnections(Request request) async {
+  if (!await verifyUser(request, 'owner')) {
+    return Response.unauthorized('Invalid credentials');
+  }
+  String email = request.headers['email']!;
+  
+  final data = await UserApi.ownerConnections(email);
+  return Response.ok(jsonEncode(data));
+}
+
+Future<Response> _vetConnections(Request request) async {
+  if (!await verifyUser(request, 'vet')) {
+    return Response.unauthorized('Invalid credentials');
+  }
+  String email = request.headers['email']!;
+  
+  final data = await UserApi.vetConnections(email);
+  return Response.ok(jsonEncode(data));
 }
 
 Future<Response> _chatRetrieve(Request request) async {

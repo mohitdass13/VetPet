@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:vetpet/api/pet_api.dart';
+import 'package:vetpet/api/owner_api.dart';
 import 'package:vetpet/api/user.dart';
+import 'package:vetpet/common/utils.dart';
 
 import '../types.dart';
 
@@ -16,7 +17,7 @@ class _VetListState extends State<VetList> {
 
   @override
   void initState() {
-    vets = PetApi.getVetList();
+    vets = OwnerApi.getVetList();
     super.initState();
   }
 
@@ -69,7 +70,9 @@ class VetCard extends StatelessWidget {
         child: InkWell(
           onTap: () => showDialog(
             context: context,
-            builder: (context) => const RequestDialog(),
+            builder: (context) => RequestDialog(
+              vet: vet,
+            ),
           ),
           child: Padding(
             padding: const EdgeInsets.all(10.0),
@@ -106,7 +109,8 @@ class VetCard extends StatelessWidget {
 }
 
 class RequestDialog extends StatefulWidget {
-  const RequestDialog({super.key});
+  const RequestDialog({super.key, required this.vet});
+  final Vet vet;
 
   @override
   State<RequestDialog> createState() => _RequestDialogState();
@@ -138,7 +142,7 @@ class _RequestDialogState extends State<RequestDialog> {
             width: MediaQuery.of(context).size.width * 0.8,
             height: MediaQuery.of(context).size.height * 0.8 - 200,
             child: ListView(
-              // shrinkWrap: true,
+              shrinkWrap: true,
               children: List.generate(
                 pets.length,
                 (index) => ListTile(
@@ -165,7 +169,27 @@ class _RequestDialogState extends State<RequestDialog> {
           child: const Text('Cancel'),
         ),
         ElevatedButton(
-          onPressed: (selected.contains(true)) ? () {} : null,
+          onPressed: (selected.contains(true))
+              ? () async {
+                  List<Pet> selectedPets = [];
+                  for (var i = 0; i < pets.length; i++) {
+                    if (selected[i]) {
+                      selectedPets.add(pets[i]);
+                    }
+                  }
+                  bool sent = await OwnerApi.sendRequest(
+                      selectedPets, widget.vet.email);
+                  if (mounted) {
+                    if (sent) {
+                      Utils.showSnackbar(context, 'Request sent');
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                    } else {
+                      Utils.showSnackbar(context, 'Request failed');
+                    }
+                  }
+                }
+              : null,
           child: const Text('Send request'),
         ),
       ],

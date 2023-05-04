@@ -1,6 +1,5 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:vetpet/api/pet_api.dart';
+import 'package:vetpet/api/owner_api.dart';
 import 'package:vetpet/common/utils.dart';
 import 'package:vetpet/types.dart';
 
@@ -49,7 +48,7 @@ class _AddPetState extends State<AddPet> {
                     controllers['age']!.value.text.isNotEmpty &&
                     controllers['weight']!.value.text.isNotEmpty)
                 ? () async {
-                    bool added = await PetApi.addPet(Pet(
+                    bool added = await OwnerApi.addPet(Pet(
                       0,
                       controllers['name']!.value.text,
                       int.parse(controllers['age']!.value.text),

@@ -1,7 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:vetpet/api/owner_api.dart';
 
-import '../api/pet_api.dart';
 import '../common/utils.dart';
 import '../types.dart';
 
@@ -59,7 +59,7 @@ class _AddHistoryState extends State<AddHistory> {
               }
               bool added;
               try {
-                added = await PetApi.addHistory(PetHistory(
+                added = await OwnerApi.addHistory(PetHistory(
                   widget.pet.id,
                   nameController.value.text,
                   descriptionController.value.text,
@@ -68,8 +68,7 @@ class _AddHistoryState extends State<AddHistory> {
                   fileResult?.files.single.name,
                   fileResult?.files.single.bytes,
                 ));
-              }
-              catch (e) {
+              } catch (e) {
                 Utils.showSnackbar(context, "Error");
                 return;
               }
@@ -80,8 +79,8 @@ class _AddHistoryState extends State<AddHistory> {
                 } else {
                   Utils.showSnackbar(context, "Error");
                 }
+                Navigator.pop(context);
               }
-              Navigator.pop(context);
             },
             child: const Text(
               'Save',
@@ -141,7 +140,7 @@ class _AddHistoryState extends State<AddHistory> {
             ),
             Row(
               children: [
-                Icon(Icons.picture_as_pdf),
+                const Icon(Icons.picture_as_pdf),
                 const SizedBox(
                   width: 17,
                 ),
@@ -153,19 +152,21 @@ class _AddHistoryState extends State<AddHistory> {
                     ),
                   )
                 else
-                  Text('No file selected'),
-                SizedBox(
+                  const Text('No file selected'),
+                const SizedBox(
                   width: 10,
                 ),
                 ElevatedButton(
                   onPressed: () => getFile(),
                   child: fileResult == null
-                      ? Text('Upload File')
-                      : Text("Change File"),
+                      ? const Text('Upload File')
+                      : const Text("Change File"),
                 ),
               ],
             ),
-            SizedBox(height: 20,),
+            const SizedBox(
+              height: 20,
+            ),
             TextFormField(
               controller: descriptionController,
               minLines: 1,

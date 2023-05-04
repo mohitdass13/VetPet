@@ -10,7 +10,7 @@ import 'package:vetpet/owner/add_pet.dart';
 import 'package:vetpet/owner/pet_details.dart';
 import 'package:vetpet/owner/tabs.dart';
 import 'package:vetpet/types.dart';
-import 'package:vetpet/vet/AddHistory.dart';
+import 'package:vetpet/vet/add_history.dart';
 import 'package:vetpet/vet/client_details.dart';
 import 'package:vetpet/vet/tabs.dart';
 

@@ -30,11 +30,11 @@ void main() {
     );
     expect(response.statusCode, 200);
 
-    response = await post(
-      Uri.parse('$host$baseUrl/login/requestotp/'),
-      body: '{"email": "kbsingh@gmail.com"}',
-      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-    );
+    // response = await post(
+    //   Uri.parse('$host$baseUrl/login/requestotp/'),
+    //   body: '{"email": "kbsingh@gmail.com"}',
+    //   headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    // );
 
   });
 
