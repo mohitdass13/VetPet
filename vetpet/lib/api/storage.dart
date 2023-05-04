@@ -73,4 +73,8 @@ abstract class Storage {
     CurrentUser.userKey = null;
     CurrentUser.user = null;
   }
+
+  static void savePetData(Pet pet) {}
+  
+  
 }

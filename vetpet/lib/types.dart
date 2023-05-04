@@ -11,8 +11,19 @@ class Vet extends User {
   String wTime;
 }
 
+
+
 class Owner extends User {
-  List<Pet> pets = [Pet(0, "Pet1"), Pet(1, "Pet2"), Pet(2, "Pet3")];
+  List<Pet> pets = [
+    Pet(0, "Pet1", 10, "German Shepherd", 12.0),
+    Pet(1, "Pet2", 10, "German Shepherd", 12.0),
+    Pet(2, "Pet3", 10, "German Shepherd", 12.0)
+  ];
+  List<VetClass> vets = [
+    VetClass("Vet1", "Punjab", "Mon-Fri 9:00-17:00"),
+    VetClass("Vet2", "Punjab", "Mon-Fri 9:00-17:00"),
+  ];
+  // List<Pet> pets = PetApi.getPets() as List<Pet>;
 
   Owner(super.email, super.name, super.state, super.phone);
 }
@@ -22,7 +33,20 @@ List<String> breed = ["Labrador", "Pug", "German Shepherd", "Golden Retriever"];
 class Pet {
   String name;
   int id;
-  Pet(this.id, this.name);
+  int age;
+  String breed;
+  double weight;
+
+  List<PetHistory> history = [
+    PetHistory(
+        0, "Pain medication", "Description", DateTime.now(), "Vaccination"),
+    PetHistory(1, "Heartworm medication", "Description", DateTime.now(),
+        "Vaccination"),
+    PetHistory(
+        2, "Deworming medication", "Description", DateTime.now(), "Vaccination")
+  ];
+
+  Pet(this.id, this.name, this.age, this.breed, this.weight);
 }
 
 class Message {
@@ -31,4 +55,20 @@ class Message {
   DateTime time;
   Future<Map<String, dynamic>>? sendResponse;
   Message(this.text, this.byCurrent, this.time, {this.sendResponse});
+}
+
+class PetHistory {
+  int id;
+  String name;
+  String description;
+  DateTime date;
+  String type;
+  PetHistory(this.id, this.name, this.description, this.date, this.type);
+}
+
+class VetClass {
+  String name;
+  String state;
+  String wTime;
+  VetClass(this.name, this.state, this.wTime);
 }

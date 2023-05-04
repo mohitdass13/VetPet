@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:vetpet/api/pet_api.dart';
+import 'package:vetpet/common/utils.dart';
 import 'package:vetpet/types.dart';
 
 class AddPet extends StatefulWidget {
@@ -24,7 +26,6 @@ class _AddPetState extends State<AddPet> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     // breeds.add('--Select Breed--');
     breeds.addAll(breed);
@@ -42,7 +43,23 @@ class _AddPetState extends State<AddPet> {
         ),
         actions: [
           TextButton(
-            onPressed: () {},
+            onPressed: () async {
+              bool added = await PetApi.addPet(Pet(
+                0,
+                controllers['name']!.value.text,
+                int.parse(controllers['age']!.value.text),
+                breedValue!,
+                double.parse(controllers['weight']!.value.text),
+              ));
+              if (mounted) {
+                if (added) {
+                  Navigator.pop(context);
+                  Utils.showSnackbar(context, "Pet Added");
+                } else {
+                  Utils.showSnackbar(context, "Error");
+                }
+              }
+            },
             child: const Text(
               'Add',
               style: TextStyle(
@@ -150,33 +167,33 @@ class _AddPetState extends State<AddPet> {
                   setState(() {});
                 },
               ),
-              TextFormField(
-                controller: controllers['vet_id'],
-                decoration: InputDecoration(
-                  labelText: 'Vet Email',
-                  icon: Column(
-                    children: const [
-                      SizedBox(
-                        height: 15,
-                      ),
-                      Icon(
-                        Icons.mail,
-                      ),
-                    ],
-                  ),
-                  errorText:
-                      RegExp(r"[a-zA-Z0-9.a-zA-Z0-9!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                      .hasMatch(
-                                          controllers['vet_id']!.value.text) ==
-                                  false &&
-                              controllers['vet_id']!.value.text.isNotEmpty
-                          ? 'Please enter valid email address'
-                          : null,
-                ),
-                onChanged: (value) {
-                  setState(() {});
-                },
-              ),
+              // TextFormField(
+              //   controller: controllers['vet_id'],
+              //   decoration: InputDecoration(
+              //     labelText: 'Vet Email',
+              //     icon: Column(
+              //       children: const [
+              //         SizedBox(
+              //           height: 15,
+              //         ),
+              //         Icon(
+              //           Icons.mail,
+              //         ),
+              //       ],
+              //     ),
+              //     errorText:
+              //         RegExp(r"[a-zA-Z0-9.a-zA-Z0-9!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+              //                         .hasMatch(
+              //                             controllers['vet_id']!.value.text) ==
+              //                     false &&
+              //                 controllers['vet_id']!.value.text.isNotEmpty
+              //             ? 'Please enter valid email address'
+              //             : null,
+              //   ),
+              //   onChanged: (value) {
+              //     setState(() {});
+              //   },
+              // ),
               const SizedBox(
                 height: 20,
               ),
@@ -200,7 +217,7 @@ class _AddPetState extends State<AddPet> {
                                 GetHistory(
                                   controller: e,
                                 ),
-                                Divider(),
+                                const Divider(),
                                 IconButton(
                                   onPressed: () {
                                     setState(() {
@@ -293,8 +310,8 @@ class _GetHistoryState extends State<GetHistory> {
           height: 20,
         ),
         Row(children: [
-          Icon(Icons.calendar_month),
-          SizedBox(
+          const Icon(Icons.calendar_month),
+          const SizedBox(
             width: 17,
           ),
           InkWell(
@@ -313,7 +330,6 @@ class _GetHistoryState extends State<GetHistory> {
               ),
             ),
           ),
-
         ]),
         const SizedBox(
           height: 20,

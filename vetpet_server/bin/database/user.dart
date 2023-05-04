@@ -20,4 +20,28 @@ class UserDB {
     );
     return result.first['users']?['role'] ?? 'Invalid';
   }
+
+
+  static Future<bool> addPet(String name, int age, double weight, String breed,
+      String owneremailid) async {
+    final result = await Database.connection.execute(
+      'INSERT INTO pet(name,age,weight,breed,owner_emailid) VALUES(@name,@age,@weight,@breed,@owner_emailid)',
+      substitutionValues: {
+        'name': name,
+        'age': age,
+        'weight': weight,
+        'breed': breed,
+        'owner_emailid': owneremailid,
+      },
+    );
+    return result > 0;
+  }
+
+  static Future<List<Map<String, Map<String, dynamic>>>> getPets(String email) async {
+    final result = await Database.connection.mappedResultsQuery(
+      'SELECT * FROM pet WHERE owner_emailid = @email',
+      substitutionValues: {'email': email},
+    );
+    return result;
+  }
 }

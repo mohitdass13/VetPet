@@ -21,4 +21,15 @@ class UserApi {
   static Future<bool> userExist(String email) async {
     return await userType(email) != null;
   }
+
+  static Future<bool> addPet(String name, int age, double weight, String breed,
+      String owneremailid) async {
+    return UserDB.addPet(name, age, weight, breed, owneremailid);
+  }
+
+  static Future<List<Map<String, dynamic>?>> getPets(String email) async {
+    final result = await UserDB.getPets(email);
+    final data = result.map((e) => e['pet']).toList();
+    return data;
+  }
 }

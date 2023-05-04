@@ -21,8 +21,9 @@ final _router = Router()
   ..get('/api/vet/details', _vetInfo)
   ..get('/api/owner/details', _ownerInfo)
   ..post('/api/chat/send', _chatSend)
-  ..get('/api/chat/retrieve', _chatRetrieve);
-
+  ..get('/api/chat/retrieve', _chatRetrieve)
+  ..post('/api/pet/add', _addPet)
+  ..get('/api/owner/pets', _getPets);
 Response _rootHandler(Request req) {
   return Response.ok('Hello, World!\n');
 }
@@ -107,6 +108,35 @@ Future<Response> _signupVet(Request req) async {
   } else {
     return Response.internalServerError();
   }
+}
+
+Future<Response> _addPet(Request request) async {
+  Map<String, dynamic> content = jsonDecode(await request.readAsString());
+  String name = content['name'];
+  String breed = content['breed'];
+  double weight = content['weight'];
+  int age = content['age'];
+  String? email = request.headers['email'];
+  if (!await verifyUser(request, null)) {
+    return Response.unauthorized('invalid user');
+  }
+
+  if (await UserApi.addPet(name, age, weight, breed, email!)) {
+    return Response.ok('Pet added!');
+  } else {
+    return Response.internalServerError();
+  }
+}
+
+Future<Response> _getPets(Request request) async {
+  String? email = request.headers['email'];
+  if (!await verifyUser(request, null)) {
+    return Response.unauthorized('invalid user');
+  }
+
+  final data = await UserApi.getPets(email!);
+
+  return Response.ok(jsonEncode(data));
 }
 
 Future<Response> _signupOwner(Request req) async {
