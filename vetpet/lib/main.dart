@@ -10,6 +10,7 @@ import 'package:vetpet/owner/add_pet.dart';
 import 'package:vetpet/owner/pet_details.dart';
 import 'package:vetpet/owner/tabs.dart';
 import 'package:vetpet/types.dart';
+import 'package:vetpet/vet/AddHistory.dart';
 import 'package:vetpet/vet/client_details.dart';
 import 'package:vetpet/vet/tabs.dart';
 
@@ -67,6 +68,28 @@ class MyApp extends StatelessWidget {
                   return MaterialPageRoute(
                     builder: (context) {
                       return PetDetails(
+                        pet: pet,
+                        isVet: false,
+                      );
+                    },
+                  );
+                }
+                else if (settings.name == '/vet/client/pet') {
+                  final pet = settings.arguments as Pet;
+                  return MaterialPageRoute(
+                    builder: (context) {
+                      return PetDetails(
+                        pet: pet,
+                        isVet: true,
+                      );
+                    },
+                  );
+                }
+                else if (settings.name == '/vet/client/pet/add_history') {
+                  final pet = settings.arguments as Pet;
+                  return MaterialPageRoute(
+                    builder: (context) {
+                      return AddHistory(
                         pet: pet,
                       );
                     },

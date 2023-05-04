@@ -39,11 +39,11 @@ class _ClientDetailsState extends State<ClientDetails> {
                                 title: Text(e.name),
                                 subtitle: Text('${e.id}'),
                                 trailing: const Icon(Icons.navigate_next),
-                                // onTap: () => Navigator.pushNamed(
-                                //   context,
-                                //   '/vet/pet',
-                                //   arguments: e,
-                                // ),
+                                onTap: () => Navigator.pushNamed(
+                                  context,
+                                  '/vet/client/pet',
+                                  arguments: e,
+                                ),
                               ),
                             )
                             .toList(),

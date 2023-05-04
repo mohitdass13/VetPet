@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart';
@@ -25,9 +27,12 @@ final _router = Router()
   ..post('/api/chat/send', _chatSend)
   ..get('/api/chat/retrieve', _chatRetrieve)
   ..post('/api/pet/add', _addPet)
+  ..get('/api/owner/pets', _getPets)
+  ..post('/api/vet/client/pet/add_history/add', _addHistory)
   ..post('/api/pet/remove', _removePet)
   ..get('/api/owner/pets', _getPets)
-  ..post('/api/owner/request', _requestVet);
+  ..post('/api/owner/request', _requestVet)
+  ..get('/pet/history', _getHistory);
 
 Response _rootHandler(Request req) {
   return Response.ok('Hello, World!\n');
@@ -133,6 +138,28 @@ Future<Response> _addPet(Request request) async {
   }
 }
 
+Future<Response> _addHistory(Request request) async {
+  Map<String, dynamic> content = jsonDecode(await request.readAsString());
+  String petId = content['pet_id'];
+  String name = content['name'];
+  String? description = content['description'];
+  String date = content['date'];
+  String type = content['type'];
+  String? fileName = content['file_name'];
+  Uint8List fileData = Uint8List.fromList(
+      content['file_data'].split(',').map((e) => int.parse(e)).toList());
+  if (!await verifyUser(request, null)) {
+    return Response.unauthorized('invalid user');
+  }
+
+  if (await UserApi.addHistory(
+      petId, name, description!, date, type, fileName!, fileData)) {
+    return Response.ok('Pet added!');
+  } else {
+    return Response.internalServerError();
+  }
+}
+
 Future<Response> _removePet(Request request) async {
   if (!await verifyUser(request, null)) {
     return Response.unauthorized('invalid user');
@@ -155,6 +182,14 @@ Future<Response> _getPets(Request request) async {
   }
 
   final data = await UserApi.getPets(email!);
+
+  return Response.ok(jsonEncode(data));
+}
+
+Future<Response> _getHistory(Request request) async {
+  String? petId = request.headers['pet_id'];
+
+  final data = await UserApi.getHistory(petId!);
 
   return Response.ok(jsonEncode(data));
 }

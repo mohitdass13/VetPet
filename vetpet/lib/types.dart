@@ -1,3 +1,7 @@
+import 'dart:typed_data';
+
+import 'package:file_picker/file_picker.dart';
+
 class User {
   String name;
   String email;
@@ -10,6 +14,8 @@ class Vet extends User {
   Vet(super.email, super.name, super.state, super.phone, this.wTime);
   String wTime;
 }
+
+
 
 class Owner extends User {
   List<Pet> pets = [];
@@ -32,12 +38,12 @@ class Pet {
   double weight;
 
   List<PetHistory> history = [
-    PetHistory(
-        0, "Pain medication", "Description", DateTime.now(), "Vaccination"),
-    PetHistory(1, "Heartworm medication", "Description", DateTime.now(),
-        "Vaccination"),
-    PetHistory(
-        2, "Deworming medication", "Description", DateTime.now(), "Vaccination")
+  //   PetHistory.withoutFile(
+  //       0, "Pain medication", "Description", DateTime.now(), "Vaccination"),
+  //   PetHistory.withoutFile(1, "Heartworm medication", "Description", DateTime.now(),
+  //       "Vaccination"),
+  //   PetHistory.withoutFile(
+  //       2, "Deworming medication", "Description", DateTime.now(), "Vaccination")
   ];
 
   Pet(this.id, this.name, this.age, this.breed, this.weight);
@@ -52,10 +58,18 @@ class Message {
 }
 
 class PetHistory {
-  int id;
+  int? id;
+  int? petId;
   String name;
-  String description;
+  String? description;
   DateTime date;
   String type;
-  PetHistory(this.id, this.name, this.description, this.date, this.type);
+  String? fileName;
+  Uint8List? fileData;
+
+  PetHistory(
+      this.petId, this.name, this.description, this.date, this.type, this.fileName, this.fileData);
+
+  PetHistory.withId(this.id, this.petId, this.name, this.description, this.date, this.type, this.fileName, this.fileData);
+  PetHistory.withoutFile(this.id, this.name, this.description, this.date, this.type);
 }

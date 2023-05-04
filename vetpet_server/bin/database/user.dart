@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'database.dart';
 
 class UserDB {
@@ -33,6 +35,7 @@ class UserDB {
         'owner_emailid': owneremailid,
       },
     );
+
     return result > 0;
   }
 
@@ -45,6 +48,29 @@ class UserDB {
       },
     );
     return result > 0;
+  }
+
+  static Future<bool> addHistory(String petId, String name, String description,
+      String date, String type, String? fileName, ByteData fileData) async {
+    final result = await Database.connection.execute( 'INSERT INTO pet_history(pet_id,name,description,date,type,file_name,file_data) VALUES($petId,@name,@description,@date,@type,@file_name,@file_data)',
+      substitutionValues: {
+        'name': name,
+        'description': description,
+        'date': date,
+        'type': type,
+        'file_name': fileName,
+        'file_data': fileData,
+      },
+    );
+    return result>0;
+  }
+
+  static Future<List<Map<String, Map<String, dynamic>>>> getHistory(String petId) async {
+    final result = await Database.connection.mappedResultsQuery(
+      'SELECT * FROM pet_history WHERE pet_id = @pet_id',
+      substitutionValues: {'pet_id': petId},
+    );
+    return result;
   }
 
   static Future<List<Map<String, Map<String, dynamic>>>> getPets(

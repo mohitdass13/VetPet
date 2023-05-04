@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import '../database/user.dart';
 
 class UserApi {
@@ -29,6 +31,18 @@ class UserApi {
 
   static Future<bool> removePet(int petid, String ownerid) async {
     return UserDB.removePet(petid, ownerid);
+  }
+
+  static Future<bool> addHistory(String petId, String name, String description,
+      String date, String type, String? fileName, Uint8List? fileData) async {
+    return UserDB.addHistory(
+        petId, name, description, date, type, fileName, ByteData.view(fileData!.buffer));
+  }
+
+  static Future<List<Map<String, dynamic>?>> getHistory(String petId) async {
+    final result = await UserDB.getHistory(petId);
+    final data = result.map((e) => e['pet_history']).toList();
+    return data;
   }
 
   static Future<List<Map<String, dynamic>?>> getPets(String email) async {

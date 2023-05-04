@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:vetpet/api/requests.dart';
 import 'package:vetpet/api/user.dart';
@@ -32,6 +33,28 @@ class PetApi {
     }
   }
 
+  static Future<bool> getHistory(Pet pet) async {
+    final req = await Requests.getJson('/pet/history', parameters: {
+      'pet_id': pet.id.toString(),
+    }, authorization: true);
+    if (req['success']){
+      final histories = jsonDecode(req['response']) as List<dynamic>;
+      pet.history = histories.map((e) => PetHistory.withId(
+        e['id'],
+        e['pet_id'],
+        e['name'],
+        e['description'],
+        DateTime.parse(e['date']),
+        e['type'],
+        e['file_name'],
+        e['file_data'] == null ? null : Uint8List.view(e['file_data'].buffer),
+      )).toList();
+      return Future.value(true);
+    } else {
+      return Future.value(false);
+    }
+  }
+
   static Future<bool> removePet(Pet pet) async {
     final req = await Requests.postJson(
         '/pet/remove',
@@ -62,6 +85,22 @@ class PetApi {
       'pet_ids': petIds,
       'vet_id': vetId,
     }, authorization: true);
+    return req['success'];
+  }
+
+  static Future<bool> addHistory (PetHistory history) async {
+    final req = await Requests.postJson(
+        '/vet/client/pet/add_history/add',
+        {
+          "pet_id": history.petId,
+          "name": history.name,
+          "description": history.description,
+          "date": "${history.date.year}-${history.date.month}-${history.date.day}",
+          "type": history.type,
+          "file_name": history.fileName,
+          "file_data": history.fileData?.join(","),
+        },
+        authorization: true);
     return req['success'];
   }
 }

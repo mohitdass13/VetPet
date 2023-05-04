@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:vetpet/api/pet_api.dart';
 import 'package:vetpet/common/utils.dart';
@@ -22,7 +23,7 @@ class _AddPetState extends State<AddPet> {
   List<String> breeds = [];
   String? breedValue;
 
-  List<TextEditingController> historyControllers = [];
+  // List<TextEditingController> historyControllers = [];
 
   @override
   void initState() {
@@ -173,92 +174,63 @@ class _AddPetState extends State<AddPet> {
                   setState(() {});
                 },
               ),
-              // TextFormField(
-              //   controller: controllers['vet_id'],
-              //   decoration: InputDecoration(
-              //     labelText: 'Vet Email',
-              //     icon: Column(
-              //       children: const [
-              //         SizedBox(
-              //           height: 15,
-              //         ),
-              //         Icon(
-              //           Icons.mail,
-              //         ),
-              //       ],
-              //     ),
-              //     errorText:
-              //         RegExp(r"[a-zA-Z0-9.a-zA-Z0-9!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-              //                         .hasMatch(
-              //                             controllers['vet_id']!.value.text) ==
-              //                     false &&
-              //                 controllers['vet_id']!.value.text.isNotEmpty
-              //             ? 'Please enter valid email address'
-              //             : null,
-              //   ),
-              //   onChanged: (value) {
-              //     setState(() {});
-              //   },
-              // ),
               const SizedBox(
                 height: 20,
               ),
-              ...historyControllers
-                  .map((e) => Column(
-                        children: [
-                          const SizedBox(
-                            height: 15,
-                          ),
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.grey,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                GetHistory(
-                                  controller: e,
-                                ),
-                                const Divider(),
-                                IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      historyControllers.remove(e);
-                                      hisCount--;
-                                    });
-                                  },
-                                  icon: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 15,
-                          ),
-                        ],
-                      ))
-                  .toList(),
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  const Divider(),
-                  ElevatedButton(
-                    onPressed: () => setState(() {
-                      historyControllers.add(TextEditingController());
-                      // historyControllers.add({'name': TextEditingController(), 'date': TextEditingController(), 'description': TextEditingController()});
-                      // hisCount++;
-                    }),
-                    child: const Text('Add History'),
-                  ),
-                ],
-              )
+              // ...historyControllers
+              //     .map((e) => Column(
+              //           children: [
+              //             const SizedBox(
+              //               height: 15,
+              //             ),
+              //             Container(
+              //               padding: const EdgeInsets.all(10),
+              //               decoration: BoxDecoration(
+              //                 border: Border.all(
+              //                   color: Colors.grey,
+              //                 ),
+              //                 borderRadius: BorderRadius.circular(10),
+              //               ),
+              //               child: Column(
+              //                 mainAxisSize: MainAxisSize.min,
+              //                 children: [
+              //                   GetHistory(),
+              //                   const Divider(),
+              //                   IconButton(
+              //                     onPressed: () {
+              //                       setState(() {
+              //                         historyControllers.remove(e);
+              //                         hisCount--;
+              //                       });
+              //                     },
+              //                     icon: const Icon(
+              //                       Icons.delete,
+              //                       color: Colors.red,
+              //                     ),
+              //                   ),
+              //                 ],
+              //               ),
+              //             ),
+              //             const SizedBox(
+              //               height: 15,
+              //             ),
+              //           ],
+              //         ))
+              //     .toList(),
+              // Stack(
+              //   alignment: Alignment.center,
+              //   children: [
+              //     const Divider(),
+              //     ElevatedButton(
+              //       onPressed: () => setState(() {
+              //         historyControllers.add(TextEditingController());
+              //         // historyControllers.add({'name': TextEditingController(), 'date': TextEditingController(), 'description': TextEditingController()});
+              //         // hisCount++;
+              //       }),
+              //       child: const Text('Add History'),
+              //     ),
+              //   ],
+              // )
             ],
           ),
         ),
@@ -267,80 +239,3 @@ class _AddPetState extends State<AddPet> {
   }
 }
 
-class GetHistory extends StatefulWidget {
-  const GetHistory({Key? key, required this.controller}) : super(key: key);
-  final TextEditingController controller;
-
-  @override
-  State<GetHistory> createState() => _GetHistoryState();
-}
-
-class _GetHistoryState extends State<GetHistory> {
-  DateTime selectedDate = DateTime.now();
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate,
-        firstDate: DateTime(2015, 8),
-        lastDate: DateTime(2101));
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        TextFormField(
-          controller: widget.controller,
-          decoration: InputDecoration(
-            labelText: 'Name',
-            icon: Column(
-              children: const [
-                SizedBox(
-                  height: 15,
-                ),
-                Icon(
-                  Icons.history,
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        Row(children: [
-          const Icon(Icons.calendar_month),
-          const SizedBox(
-            width: 17,
-          ),
-          InkWell(
-            onTap: () => _selectDate(context),
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Colors.grey,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                '${selectedDate.toLocal()}'.split(' ')[0],
-                style: const TextStyle(fontSize: 16),
-              ),
-            ),
-          ),
-        ]),
-        const SizedBox(
-          height: 20,
-        ),
-      ],
-    );
-  }
-}

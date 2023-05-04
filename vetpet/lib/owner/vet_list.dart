@@ -137,24 +137,22 @@ class _RequestDialogState extends State<RequestDialog> {
           SizedBox(
             width: MediaQuery.of(context).size.width * 0.8,
             height: MediaQuery.of(context).size.height * 0.8 - 200,
-            child: Flexible(
-              child: ListView(
-                shrinkWrap: true,
-                children: List.generate(
-                  pets.length,
-                  (index) => ListTile(
-                    title: Text(pets[index].name),
-                    subtitle: Text(pets[index].breed),
-                    selected: selected[index],
-                    trailing: Icon(selected[index]
-                        ? Icons.check_box
-                        : Icons.check_box_outline_blank),
-                    onTap: () {
-                      setState(() {
-                        selected[index] = !selected[index];
-                      });
-                    },
-                  ),
+            child: ListView(
+              // shrinkWrap: true,
+              children: List.generate(
+                pets.length,
+                (index) => ListTile(
+                  title: Text(pets[index].name),
+                  subtitle: Text(pets[index].breed),
+                  selected: selected[index],
+                  trailing: Icon(selected[index]
+                      ? Icons.check_box
+                      : Icons.check_box_outline_blank),
+                  onTap: () {
+                    setState(() {
+                      selected[index] = !selected[index];
+                    });
+                  },
                 ),
               ),
             ),
