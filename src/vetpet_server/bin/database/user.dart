@@ -147,9 +147,7 @@ class UserDB {
     return data;
   }
 
-
   static Future<bool> vetAccept(String vetEmail, String owner) async {
-
     final result = await Database.connection.execute(
       'UPDATE connections WHERE ',
     );

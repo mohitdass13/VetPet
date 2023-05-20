@@ -289,7 +289,7 @@ Future<Response> _vetAccept(Request request) async {
 
   String owner = content['owner_id'];
 
-  if (await UserApi.vetAccept(petIds, vetEmail, email)) {
+  if (await UserApi.vetAccept( email, owner)) {
     return Response.ok('Request sent');
   } else {
     return Response.internalServerError();

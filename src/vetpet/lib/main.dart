@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
                 useMaterial3: true,
                 colorSchemeSeed: Colors.blue,
               ),
-              initialRoute: snapshot.data,
+              initialRoute: '/chat',
               routes: {
                 "/login": (context) => const LoginPage(),
                 "/signup": (context) => const SignupPage(),
@@ -54,12 +54,12 @@ class MyApp extends StatelessWidget {
                     },
                   );
                 } else if (settings.name == '/chat') {
-                  final user = settings.arguments as User;
+                  // final user = settings.arguments as User;
                   return MaterialPageRoute(
                     builder: (context) {
                       return ChatLayout(
                         current: CurrentUser.user!,
-                        other: user,
+                        other: User('v@a.s', 'Vet 1', '',''),
                       );
                     },
                   );

@@ -76,8 +76,8 @@ class UserApi {
     return await UserDB.vetConnections(email);
   }
 
-  static Future<List<Map<String, dynamic>>> vetAccept(
+  static Future<bool> vetAccept(
       String vetId, String ownerId) async {
-    return await UserDB.vetConnections(vetId, ownerId);
+    return await UserDB.vetAccept(vetId, ownerId);
   }
 }

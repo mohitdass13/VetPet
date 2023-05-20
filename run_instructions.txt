@@ -1,0 +1,15 @@
+Instructions to run:
+
+Run server (using docker compose):
+  cd src/vetpet_server
+  docker compose up
+This will create and setup the database and start the server automatically.
+
+Run frontend:
+1. Install flutter sdk
+2. Connect android device (emulator or physical)
+3. Run command to connect localhost of android device and pc:
+  adb reverse tcp:8080 tcp:8080
+4. use command to run flutter app:
+  cd src/vetpet
+  flutter run
